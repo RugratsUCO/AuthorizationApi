@@ -1,8 +1,0 @@
-package com.authorizationapi.authorizationapi.repository;
-
-import com.authorizationapi.authorizationapi.domain.AdministradorEstructuraEncargadoDomain;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-
-
-public interface AdministradorEstructuraEncargadoRepository extends ReactiveCrudRepository<AdministradorEstructuraEncargadoDomain, String> {
-}
