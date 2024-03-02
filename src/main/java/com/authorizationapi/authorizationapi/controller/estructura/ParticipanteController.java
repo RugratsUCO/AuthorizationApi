@@ -1,4 +1,4 @@
-package com.authorizationapi.authorizationapi.controller;
+package com.authorizationapi.authorizationapi.controller.estructura;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,20 +23,5 @@ public final class ParticipanteController {
 	public void dummy() {
 
 	}
-	@GetMapping
-	public ResponseEntity<Response<ParticipanteDTO>> list(@RequestBody ParticipanteDTO dto) {
-		ParticipanteFacade facade = new ParticipanteFacadeImpl();
-		List<ParticipanteDTO> list = facade.consultar(dto);
-		
-		List<String> messages = new ArrayList<>();
-		messages.add("Participantes consultados exitosamente");
-		
-		Response<ParticipanteDTO> response = new Response<>(list,messages);
-		return new ResponseEntity<>(response,HttpStatus.OK);
-	}
-	@GetMapping("/{id}")
-	public EstadoDTO listById(@PathVariable UUID id) {
-		return EstadoDTO.create().setIdentificador(id);
-	}
-	
+
 }

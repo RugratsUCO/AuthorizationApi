@@ -1,9 +1,10 @@
-package uco.doo.rugrats.uconnect.api.controller.response;
+package com.authorizationapi.authorizationapi.controller.response;
+
+
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import uco.doo.rugrats.uconnect.utils.UtilObject;
 
 public class Response<T> {
 	private List<T> data;
