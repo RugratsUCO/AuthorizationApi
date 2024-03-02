@@ -38,7 +38,7 @@ public final class PersonaController {
 		}
 		return new ResponseEntity<>(response, statusCode);
 	}
-	@GetMapping
+	@GetMapping("/nombre")
 	public ResponseEntity<Response<Persona>> list(@RequestBody Persona persona) {
 		service = new PersonaService();
 
