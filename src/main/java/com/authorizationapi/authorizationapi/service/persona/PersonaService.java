@@ -2,51 +2,53 @@ package com.authorizationapi.authorizationapi.service.persona;
 
 
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import com.authorizationapi.authorizationapi.domain.estructura.Participante;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
+import com.authorizationapi.authorizationapi.repository.PersonaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public final class PersonaService {
-    List<Persona> personas = new ArrayList<>();
+
+    @Autowired
+    private PersonaRepository repository;
 
     public void registrar(Persona persona) {
-        List<Persona> result;
-
-        do {
-            persona.setIdentificador(UtilUUID.generateNewUUID());
-            result = this.consultar(persona);
-        }while(!result.isEmpty());
-
-        personas.add(persona);
+        repository.save(persona);
     }
 
-    public void editar(Persona persona) {
-        for (Persona personaAEditar : personas){
-            if(personaAEditar.getIdentificador().equals(persona.getIdentificador())){
-                eliminar(personaAEditar.getIdentificador());
-                personas.add(persona);
-            }
+    public void editar(UUID identificador, Persona nuevaPersona) {
+        Optional<Persona> personaOptional = repository.findById(identificador);
+
+        if (personaOptional.isPresent()) {
+            Persona personaExistente = personaOptional.get();
+            personaExistente.setCorreo(nuevaPersona.getCorreo()).setActivo(nuevaPersona.getActivo())
+                    .setPrimerNombre(nuevaPersona.getPrimerNombre()).setSegundoNombre(nuevaPersona.getSegundoNombre())
+                    .setPrimerApellido(nuevaPersona.getPrimerApellido()).setSegundoApellido(nuevaPersona.getSegundoApellido())
+                    .setNumeroIdentificacion(nuevaPersona.getNumeroIdentificacion()).setTipoIdentificacion(nuevaPersona.getTipoIdentificacion())
+                    .setNumeroTelefono(nuevaPersona.getNumeroTelefono()).setPaisTelefono(nuevaPersona.getPaisTelefono());
+
+            repository.save(personaExistente);
+        } else {
+
+            throw new RuntimeException("Participante no encontrado con el identificador: " + identificador);
         }
     }
 
-    public List<Persona> consultar(Persona persona) {
-        List<Persona> personasConsultadas = new ArrayList<>();
-        for (Persona personaAConsultar: personas){
-            if(personaAConsultar.getIdentificador().equals(persona.getIdentificador())){
-                personasConsultadas.add(personaAConsultar);
-            }
-        }
-        return personasConsultadas;
+    public List<Persona> consultar() {
+        return repository.findAll();
     }
 
     public List<Persona> consultarTodas(){
-        return personas;
+        return repository.findAll();
     }
-    public void eliminar(UUID id) {
-        personas.removeIf(personaAEliminar -> personaAEliminar.getIdentificador().equals(id));
+    public void eliminar(Persona persona) {
+        repository.delete(persona);
     }
 }

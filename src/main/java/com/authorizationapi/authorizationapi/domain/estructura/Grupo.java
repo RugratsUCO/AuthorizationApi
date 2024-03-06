@@ -6,20 +6,32 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 
+import jakarta.persistence.*;
 import java.util.UUID;
-
+@Entity
+@Table(name = "Grupo")
 public final class Grupo {
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "identificador", nullable = false)
 	private UUID identificador;
-	private Estructura estructura;
-	private String nombre;
-	private boolean estaActivo;
 
-	private Grupo() {
+	@ManyToOne
+	@JoinColumn(name = "estructura")
+	private Estructura estructura;
+
+	@Column(name = "nombre")
+	private String nombre;
+
+	@Column(name = "activo")
+	private boolean activo;
+
+	public Grupo() {
 		super();
 		setIdentificador(UtilUUID.getDefaultValue());
 		setEstructura(Estructura.create());
 		setNombre(UtilText.getDefaultValue());
-		setEstaActivo(UtilBoolean.getDefaultValue());
+		setActivo(UtilBoolean.getDefaultValue());
 	}
 
 	public Grupo(final UUID identificador, final Estructura estructura, final String nombre,
@@ -28,27 +40,27 @@ public final class Grupo {
 		setIdentificador(identificador);
 		setEstructura(estructura);
 		setNombre(nombre);
-		setEstaActivo(estaActivo);
+		setActivo(estaActivo);
 
 	}
 
-	private Grupo setIdentificador(final UUID identificador) {
+	public Grupo setIdentificador(final UUID identificador) {
 		this.identificador = UtilUUID.getDefault(identificador);
 		return this;
 	}
 
-	private Grupo setEstructura(final Estructura estructura) {
+	public Grupo setEstructura(final Estructura estructura) {
 		this.estructura = UtilObject.getDefault(estructura, Estructura.create());
 		return this;
 	}
 
-	private Grupo setNombre(final String nombre) {
+	public Grupo setNombre(final String nombre) {
 		this.nombre = UtilText.applyTrim(nombre);
 		return this;
 	}
 
-	private Grupo setEstaActivo(final boolean estaActivo) {
-		this.estaActivo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
+	public Grupo setActivo(final boolean estaActivo) {
+		this.activo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
 		return this;
 	}
 
@@ -64,8 +76,8 @@ public final class Grupo {
 		return nombre;
 	}
 
-	public boolean getEstaActivo() {
-		return estaActivo;
+	public boolean getActivo() {
+		return activo;
 	}
 
 	public static Grupo create() {

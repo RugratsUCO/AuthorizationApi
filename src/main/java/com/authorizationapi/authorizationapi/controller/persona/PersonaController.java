@@ -12,17 +12,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/v1/persona")
+@RequestMapping("api/v1")
 public final class PersonaController {
-	private PersonaService service;
+	private final PersonaService service = new PersonaService();
 	@GetMapping("/dummy")
 	public String dummy() {
 		return "hola";
 	}
 
-	@PostMapping
+	@PostMapping("/persona")
 	public ResponseEntity<Response<Persona>> create(@RequestBody Persona persona) {
-		service = new PersonaService();
+
 
 		var statusCode = HttpStatus.OK;
 		Response<Persona> response = new Response<>();
@@ -38,40 +38,16 @@ public final class PersonaController {
 		}
 		return new ResponseEntity<>(response, statusCode);
 	}
-	@GetMapping
-	public ResponseEntity<Response<Persona>> list(@RequestBody Persona persona) {
-		service = new PersonaService();
 
-		var statusCode = HttpStatus.OK;
-		Response<Persona> response;
-
-		try {
-
-			List<Persona> list = service.consultar(persona);
-			List<String> messages = new ArrayList<>();
-			messages.add("Personas consultadas exitosamente");
-
-			response = new Response<>(list,messages);
-
-		}catch (Exception exception) {
-			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response = new Response<>();
-			response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
-		}
-
-		return new ResponseEntity<>(response,statusCode);
-	}
-
-	@GetMapping
-	public ResponseEntity<Response<Persona>> listAll() {
-		service = new PersonaService();
+	@GetMapping("/persona")
+	public ResponseEntity<Response<Persona>> list() {
 
 		var statusCode = HttpStatus.OK;
 		Response<Persona> response;
 
 		try {
 			List<String> messages = new ArrayList<>();
-			List<Persona> list = service.consultarTodas();
+			List<Persona> list = service.consultar();
 
 			if (!list.isEmpty()) {
 				messages.add("Personas consultadas exitosamente");
@@ -92,15 +68,14 @@ public final class PersonaController {
 		return new ResponseEntity<>(response,statusCode);
 	}
 
-	@PutMapping
-	public ResponseEntity<Response<Persona>> update(@RequestBody Persona persona) {
-		service = new PersonaService();
+	@PutMapping("/persona/{identificador}")
+	public ResponseEntity<Response<Persona>> update(@PathVariable UUID identificador,@RequestBody Persona persona) {
 
 		var statusCode = HttpStatus.OK;
 		var response = new Response<Persona>();
 
 		try {
-			service.editar(persona);
+			service.editar(identificador,persona);
 			response.getMessages().add("Se ha cambiado la informacion de la persona satisfactoriamente");
 
 		}catch (Exception exception) {
@@ -110,15 +85,14 @@ public final class PersonaController {
 
 		return new ResponseEntity<>(response,statusCode);
 	}
-	@DeleteMapping
-	public ResponseEntity<Response<Persona>> drop(@PathVariable UUID id) {
-		service = new PersonaService();
+	@DeleteMapping("/persona")
+	public ResponseEntity<Response<Persona>> drop(@RequestBody Persona persona) {
 
 		var statusCode = HttpStatus.OK;
 		var response = new Response<Persona>();
 
 		try {
-			service.eliminar(id);
+			service.eliminar(persona);
 			response.getMessages().add("La persona se ha podido eliminar satisfactoriamente");
 
 		}catch (Exception exception) {

@@ -3,39 +3,51 @@ package com.authorizationapi.authorizationapi.domain.organizacion;
 
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 
-import java.util.UUID;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "Administradororganizacionencargado")
 public final class AdministradorOrganizacionEncargado {
-    private UUID identificador;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "identificador",nullable = false)
+    private String identificador;
+
+    @ManyToOne
+    @JoinColumn(name = "persona")
     private Persona persona;
-    private boolean estaActivo;
+
+    @Column(name = "activo")
+    private boolean activo;
+
+    @ManyToOne
+    @JoinColumn(name = "organizacion")
     private Organizacion organizacion;
 
-    private AdministradorOrganizacionEncargado(){
+    public AdministradorOrganizacionEncargado(){
 		super();
-        setIdentificador(UtilUUID.getDefaultValue());
+        setIdentificador("");
         setPersona(Persona.create());
-        setEstaActivo(UtilBoolean.getDefaultValue());
+        setActivo(UtilBoolean.getDefaultValue());
         setOrganizacion(Organizacion.create());
     }
 
-    public AdministradorOrganizacionEncargado(UUID identificador, Persona persona, boolean estaActivo, Organizacion organizacion){
+    public AdministradorOrganizacionEncargado(String identificador, Persona persona, boolean estaActivo, Organizacion organizacion){
         super();
         setIdentificador(identificador);
         setPersona(persona);
-        setEstaActivo(estaActivo);
+        setActivo(estaActivo);
         setOrganizacion(organizacion);
     }
 
-    private AdministradorOrganizacionEncargado setIdentificador(final UUID identificador) {
-        this.identificador = UtilUUID.getDefault(identificador);
+    public AdministradorOrganizacionEncargado setIdentificador(final String identificador) {
+        this.identificador = identificador;
         return this;
     }
 
-    private AdministradorOrganizacionEncargado setPersona(final Persona persona) {
+    public AdministradorOrganizacionEncargado setPersona(final Persona persona) {
         this.persona = UtilObject.getDefault(persona, Persona.create());
         return this;
     }
@@ -43,12 +55,12 @@ public final class AdministradorOrganizacionEncargado {
         this.organizacion = organizacion;
         return this;
     }
-    public AdministradorOrganizacionEncargado setEstaActivo(boolean estaActivo) {
-        this.estaActivo = estaActivo;
+    public AdministradorOrganizacionEncargado setActivo(boolean estaActivo) {
+        this.activo = estaActivo;
         return this;
     }
 
-    public UUID getIdentificador() {
+    public String getIdentificador() {
         return identificador;
     }
 
@@ -56,8 +68,8 @@ public final class AdministradorOrganizacionEncargado {
         return persona;
     }
 
-    public boolean isEstaActivo() {
-        return estaActivo;
+    public boolean isActivo() {
+        return activo;
     }
     public Organizacion getOrganizacion() {
         return organizacion;

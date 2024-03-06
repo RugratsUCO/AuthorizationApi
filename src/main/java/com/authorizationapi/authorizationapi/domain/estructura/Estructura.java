@@ -7,15 +7,33 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
 
+import jakarta.persistence.*;
 import java.util.UUID;
-
+@Entity
+@Table(name = "Estructura")
 public final class Estructura {
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "identificador", nullable = false)
 	private UUID identificador;
+
+	@ManyToOne
+	@JoinColumn(name = "organizacion")
 	private Organizacion organizacion;
+
+	@ManyToOne
+	@JoinColumn(name = "estructuraPadre")
 	private Estructura estructuraPadre;
+
+	@Column(name = "nombre", nullable = false)
 	private String nombre;
-	private boolean estaActivo;
+
+	@Column(name = "activo", nullable = false)
+	private boolean activo;
+
+	@Column(name = "tienePadre", nullable = false)
 	private boolean tienePadre;
+
 	private static final String UUID_PADRE = "";
 
 	private static final Estructura PADRE = new Estructura(UtilUUID.generateUUIDFromString(UUID_PADRE),
@@ -30,17 +48,17 @@ public final class Estructura {
 		setOrganizacion(organizacion);
 		setEstructuraPadre(estructuraPadre);
 		setNombre(nombre);
-		setEstaActivo(estaActivo);
+		setActivo(estaActivo);
 		setTienePadre(tienePadre);
 	}
 
-	private Estructura() {
+	public Estructura() {
 		super();
 		setIdentificador(UtilUUID.getDefaultValue());
 		setOrganizacion(Organizacion.create());
 		setEstructuraPadre(PADRE);
 		setNombre(UtilText.getDefaultValue());
-		setEstaActivo(UtilBoolean.getDefaultValue());
+		setActivo(UtilBoolean.getDefaultValue());
 		setTienePadre(UtilBoolean.getDefaultValue());
 	}
 
@@ -53,17 +71,17 @@ public final class Estructura {
 		return this;
 	}
 
-	private Estructura setIdentificador(final UUID identificador) {
+	public Estructura setIdentificador(final UUID identificador) {
 		this.identificador = UtilUUID.getDefault(identificador);
 		return this;
 	}
 
-	private Estructura setOrganizacion(final Organizacion organizacion) {
+	public Estructura setOrganizacion(final Organizacion organizacion) {
 		this.organizacion = UtilObject.getDefault(organizacion, Organizacion.create());
 		return this;
 	}
 
-	private Estructura setEstructuraPadre(final Estructura estructuraPadre) {
+	public Estructura setEstructuraPadre(final Estructura estructuraPadre) {
 		if (isTienePadre()) {
 			this.estructuraPadre = UtilObject.getDefault(estructuraPadre, Estructura.create());
 		} else {
@@ -72,13 +90,13 @@ public final class Estructura {
 		return this;
 	}
 
-	private Estructura setNombre(final String nombre) {
+	public Estructura setNombre(final String nombre) {
 		this.nombre = UtilText.applyTrim(nombre);
 		return this;
 	}
 
-	private Estructura setEstaActivo(final boolean estaActivo) {
-		this.estaActivo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
+	public Estructura setActivo(final boolean estaActivo) {
+		this.activo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
 		return this;
 	}
 
@@ -98,8 +116,8 @@ public final class Estructura {
 		return nombre;
 	}
 
-	public boolean getEstaActivo() {
-		return estaActivo;
+	public boolean getActivo() {
+		return activo;
 	}
 
 	public static Estructura create() {

@@ -4,21 +4,35 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
+import jakarta.persistence.*;
+
 
 import java.util.UUID;
 
+@Entity
+@Table(name = "Administradorestructuraencargado")
 public final class AdministradorEstructuraEncargado {
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "identificador", nullable = false)
 	private UUID identificador;
+
+	@ManyToOne
+	@JoinColumn(name = "persona")
 	private Persona persona;
 
-	private boolean estaActivo;
+	@Column(name = "activo")
+	private boolean activo;
+
+	@ManyToOne
+	@JoinColumn(name = "estructura")
 	private Estructura estructura;
 
-	private AdministradorEstructuraEncargado() {
+	public AdministradorEstructuraEncargado() {
 		super();
 		setIdentificador(UtilUUID.getDefaultValue());
 		setPersona(Persona.create());
-		setEstaActivo(UtilBoolean.getDefaultValue());
+		setActivo(UtilBoolean.getDefaultValue());
 		setEstructura(Estructura.create());
 	}
 
@@ -26,16 +40,16 @@ public final class AdministradorEstructuraEncargado {
 		super();
 		setIdentificador(identificador);
 		setPersona(persona);
-		setEstaActivo(estaActivo);
+		setActivo(estaActivo);
 		setEstructura(estructura);
 	}
 
-	private AdministradorEstructuraEncargado setIdentificador(UUID identificador) {
+	public AdministradorEstructuraEncargado setIdentificador(UUID identificador) {
 		this.identificador = UtilUUID.getDefault(identificador);
 		return this;
 	}
 
-	private AdministradorEstructuraEncargado setPersona(Persona persona) {
+	public AdministradorEstructuraEncargado setPersona(Persona persona) {
 		this.persona = UtilObject.getDefault(persona, Persona.create());
 		return this;
 	}
@@ -43,8 +57,8 @@ public final class AdministradorEstructuraEncargado {
 		this.estructura = estructura;
 		return this;
 	}
-	public AdministradorEstructuraEncargado setEstaActivo(boolean estaActivo) {
-		this.estaActivo = estaActivo;
+	public AdministradorEstructuraEncargado setActivo(boolean estaActivo) {
+		this.activo = estaActivo;
 		return this;
 	}
 
@@ -56,8 +70,8 @@ public final class AdministradorEstructuraEncargado {
 		return persona;
 	}
 
-	public boolean isEstaActivo() {
-		return estaActivo;
+	public boolean isActivo() {
+		return activo;
 	}
 
 	public Estructura getEstructura() {

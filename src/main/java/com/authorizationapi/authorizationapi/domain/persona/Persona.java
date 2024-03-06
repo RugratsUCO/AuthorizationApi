@@ -4,24 +4,49 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
+@Entity
+@Table(name = "Persona")
 public final class Persona {
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "identificador",nullable = false)
 	private UUID identificador;
+
+	@Column(name = "tipoIdentificacion")
 	private String tipoIdentificacion;
+
+	@Column(name = "numeroIdentificacion")
 	private String numeroIdentificacion;
+
+	@Column(name = "primerNombre")
 	private String primerNombre;
+
+	@Column(name = "segundoNombre")
 	private String segundoNombre;
+
+	@Column(name = "primerApellido")
 	private String primerApellido;
+
+	@Column(name = "segundoApellido")
 	private String segundoApellido;
+
+	@Column(name = "correo")
 	private String correo;
+
+	@Column(name = "paisTelefono")
 	private String paisTelefono;
+
+	@Column(name = "numeroTelefono")
 	private String numeroTelefono;
-	private boolean estaActivo;
 
+	@Column(name = "activo")
+	private boolean activo;
 
-	private Persona() {
+	public Persona() {
 		super();
 		setIdentificador(UtilUUID.getDefaultValue());
 		setTipoIdentificacion(UtilText.getDefaultValue());
@@ -33,7 +58,7 @@ public final class Persona {
 		setCorreo(UtilText.getDefaultEmailAdress());
 		setPaisTelefono(UtilText.getDefaultValue());
 		setNumeroTelefono(UtilText.getDefaultNumeric());
-		setEstaActivo(UtilBoolean.getDefaultValue());
+		setActivo(UtilBoolean.getDefaultValue());
 	}
 
 	public Persona(UUID identificador, String tipoIdentificacion,
@@ -51,7 +76,7 @@ public final class Persona {
 		setCorreo(correo);
 		setPaisTelefono(paisTelefono);
 		setNumeroTelefono(numeroTelefono);
-		setEstaActivo(estaActivo);
+		setActivo(estaActivo);
 	}
 
 	public Persona setIdentificador(final UUID identificador) {
@@ -59,58 +84,58 @@ public final class Persona {
 		return this;
 	}
 
-	private Persona setTipoIdentificacion(final String tipoIdentificacion) {
+	public Persona setTipoIdentificacion(final String tipoIdentificacion) {
 		this.tipoIdentificacion = tipoIdentificacion;
 		return this;
 	}
 
-	private Persona setNumeroIdentificacion(final String numeroIdentificacion) {
+	public Persona setNumeroIdentificacion(final String numeroIdentificacion) {
 		this.numeroIdentificacion = UtilText.getUtilText().numericIsValid(UtilText.applyTrim(numeroIdentificacion))
 				? UtilText.applyTrim(numeroIdentificacion)
 				: UtilText.getDefaultNumeric();
 		return this;
 	}
 
-	private Persona setPrimerNombre(String primerNombre) {
+	public Persona setPrimerNombre(String primerNombre) {
 		this.primerNombre = UtilText.applyTrim(primerNombre);
 		return this;
 	}
 
-	private Persona setSegundoNombre(String segundoNombre) {
+	public Persona setSegundoNombre(String segundoNombre) {
 		this.segundoNombre = UtilText.applyTrim(segundoNombre);
 		return this;
 	}
 
-	private Persona setPrimerApellido(String primerApellido) {
+	public Persona setPrimerApellido(String primerApellido) {
 		this.primerApellido = UtilText.applyTrim(primerApellido);
 		return this;
 	}
 
-	private Persona setSegundoApellido(String segundoApellido) {
+	public Persona setSegundoApellido(String segundoApellido) {
 		this.segundoApellido = UtilText.applyTrim(segundoApellido);
 		return this;
 	}
 
-	private Persona setCorreo(final String correo) {
+	public Persona setCorreo(final String correo) {
 		this.correo = UtilText.getUtilText().emailIsvalid(UtilText.applyTrim(correo)) ? UtilText.applyTrim(correo)
 				: UtilText.getDefaultEmailAdress();
 		return this;
 	}
 
-	private Persona setPaisTelefono(final String paisTelefono) {
+	public Persona setPaisTelefono(final String paisTelefono) {
 		this.paisTelefono = paisTelefono;
 		return this;
 	}
 
-	private Persona setNumeroTelefono(final String numeroTelefono) {
+	public Persona setNumeroTelefono(final String numeroTelefono) {
 		this.numeroTelefono = UtilText.getUtilText().numericIsValid(UtilText.applyTrim(numeroTelefono))
 				? UtilText.applyTrim(numeroTelefono)
 				: UtilText.getDefaultNumeric();
 		return this;
 	}
 
-	private Persona setEstaActivo(final boolean estaActivo) {
-		this.estaActivo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
+	public Persona setActivo(final boolean activo) {
+		this.activo = UtilObject.getDefault(activo, UtilBoolean.getDefaultValue());
 		return this;
 	}
 
@@ -154,8 +179,8 @@ public final class Persona {
 		return numeroTelefono;
 	}
 
-	public boolean getEstaActivo() {
-		return estaActivo;
+	public boolean getActivo() {
+		return activo;
 	}
 
 	public static Persona create() {

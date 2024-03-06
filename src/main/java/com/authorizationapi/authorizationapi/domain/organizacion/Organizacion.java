@@ -6,22 +6,36 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 
+import jakarta.persistence.*;
 import java.util.UUID;
 
+@Entity
+@Table(name = "Organizacion")
 public final class Organizacion {
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "identificador",nullable = false)
 	private UUID identificador;
+
+	@Column(name = "nombre",nullable = false)
 	private String nombre;
+
+	@Column(name = "descripcion",nullable = false)
 	private String descripcion;
+
+	@Column(name = "tipo",nullable = false)
 	private String tipo;
-	private boolean estaActivo;
+
+	@Column(name = "activo",nullable = false)
+	private boolean activo;
 
 
-	private Organizacion() {
+	public Organizacion() {
 		setIdentificador(UtilUUID.getDefaultValue());
 		setNombre(UtilText.getDefaultValue());
 		setDescripcion(UtilText.getDefaultValue());
 		setTipo(UtilText.getDefaultValue());
-		setEstaActivo(UtilBoolean.getDefaultValue());
+		setActivo(UtilBoolean.getDefaultValue());
 	}
 
 	public Organizacion(final UUID identificador, final String nombre, final String descripcion,
@@ -30,31 +44,31 @@ public final class Organizacion {
 		setNombre(nombre);
 		setDescripcion(descripcion);
 		setTipo(tipo);
-		setEstaActivo(estaActivo);
+		setActivo(estaActivo);
 	}
 
-	private Organizacion setIdentificador(final UUID identificador) {
+	public Organizacion setIdentificador(final UUID identificador) {
 		this.identificador = UtilUUID.getDefault(identificador);
 		return this;
 	}
 
-	private Organizacion setNombre(final String nombre) {
+	public Organizacion setNombre(final String nombre) {
 		this.nombre = UtilText.applyTrim(nombre);
 		return this;
 	}
 
-	private Organizacion setDescripcion(final String descripcion) {
+	public Organizacion setDescripcion(final String descripcion) {
 		this.descripcion = UtilText.applyTrim(descripcion);
 		return this;
 	}
 
-	private Organizacion setTipo(final String tipo) {
+	public Organizacion setTipo(final String tipo) {
 		this.tipo = tipo;
 		return this;
 	}
 
-	private Organizacion setEstaActivo(final boolean estaActivo) {
-		this.estaActivo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
+	public Organizacion setActivo(final boolean estaActivo) {
+		this.activo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
 		return this;
 	}
 
@@ -74,8 +88,8 @@ public final class Organizacion {
 		return tipo;
 	}
 
-	public boolean getEstaActivo() {
-		return estaActivo;
+	public boolean getActivo() {
+		return activo;
 	}
 
 	public static Organizacion create() {

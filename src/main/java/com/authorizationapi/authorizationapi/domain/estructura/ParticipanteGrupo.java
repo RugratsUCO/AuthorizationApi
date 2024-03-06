@@ -4,62 +4,64 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 
+import jakarta.persistence.*;
 import java.util.UUID;
-
+@Entity
+@Table(name = "Participantegrupo")
 public final class ParticipanteGrupo {
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "identificador", nullable = false)
 	private UUID identificador;
+
+	@ManyToOne
+	@JoinColumn(name = "participante")
 	private Participante participante;
+
+	@ManyToOne
+	@JoinColumn(name = "grupo")
 	private Grupo grupo;
-	private Boolean puedePublicar;
-	private boolean estaActivo;
+
+	@Column(name = "activo")
+	private boolean activo;
 
 
-	private ParticipanteGrupo() {
+	public ParticipanteGrupo() {
 		setIdentificador(UtilUUID.getDefaultValue());
 		setParticipante(Participante.create());
-		setPuedePublicar(UtilBoolean.getDefaultValue());
 		setGrupo(Grupo.create());
-		setEstaActivo(UtilBoolean.getDefaultValue());
+		setActivo(UtilBoolean.getDefaultValue());
 	}
 
 	public ParticipanteGrupo(final UUID identificador, final Participante participante,
-							 final Boolean puedePublicar, final Grupo grupo, final boolean estaActivo) {
+							  final Grupo grupo, final boolean estaActivo) {
 		super();
 		setIdentificador(identificador);
 		setParticipante(participante);
-		setPuedePublicar(puedePublicar);
 		setGrupo(grupo);
-		setEstaActivo(estaActivo);
+		setActivo(estaActivo);
 	}
 
-	private ParticipanteGrupo setPuedePublicar(final Boolean puedePublicar) {
-		this.puedePublicar = UtilBoolean.getDefault(puedePublicar);
-		return this;
-	}
-
-	private ParticipanteGrupo setIdentificador(final UUID identificador) {
+	public ParticipanteGrupo setIdentificador(final UUID identificador) {
 		this.identificador = UtilUUID.getDefault(identificador);
 		return this;
 	}
 
-	private ParticipanteGrupo setParticipante(final Participante participante) {
+	public ParticipanteGrupo setParticipante(final Participante participante) {
 		this.participante = UtilObject.getDefault(participante, Participante.create());
 		return this;
 	}
 
-	private ParticipanteGrupo setGrupo(final Grupo grupo) {
+	public ParticipanteGrupo setGrupo(final Grupo grupo) {
 		this.grupo = UtilObject.getDefault(grupo, Grupo.create());
 		return this;
 	}
 
-	private ParticipanteGrupo setEstaActivo(final boolean estaActivo) {
-		this.estaActivo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
+	public ParticipanteGrupo setActivo(final boolean estaActivo) {
+		this.activo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
 		return this;
 	}
 
-	public Boolean getPuedePublicar() {
-		return puedePublicar;
-	}
 
 	public UUID getIdentificador() {
 		return identificador;
@@ -73,8 +75,8 @@ public final class ParticipanteGrupo {
 		return grupo;
 	}
 
-	public boolean getEstaActivo() {
-		return estaActivo;
+	public boolean isActivo() {
+		return activo;
 	}
 
 	public static ParticipanteGrupo create() {
