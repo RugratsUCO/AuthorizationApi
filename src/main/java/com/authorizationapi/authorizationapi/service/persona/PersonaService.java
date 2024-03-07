@@ -1,14 +1,11 @@
 package com.authorizationapi.authorizationapi.service.persona;
 
 
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
-import com.authorizationapi.authorizationapi.domain.estructura.Participante;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.repository.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,9 +42,6 @@ public final class PersonaService {
         return repository.findAll();
     }
 
-    public List<Persona> consultarTodas(){
-        return repository.findAll();
-    }
     public void eliminar(Persona persona) {
         repository.delete(persona);
     }

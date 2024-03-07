@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1")
 public final class PersonaController {
 	private final PersonaService service = new PersonaService();
-	@GetMapping("/dummy")
-	public String dummy() {
-		return "hola";
-	}
 
 	@PostMapping("/persona")
 	public ResponseEntity<Response<Persona>> create(@RequestBody Persona persona) {
