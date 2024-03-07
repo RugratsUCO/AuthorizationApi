@@ -38,7 +38,10 @@ public final class PersonaService {
         }
     }
 
-    public List<Persona> consultar() {
+    public Persona consultar(Persona persona) {
+        return repository.findById(persona.getIdentificador()).orElse(null);
+    }
+    public List<Persona> consultarTodas() {
         return repository.findAll();
     }
 

@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.service.persona.PersonaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1")
 public final class PersonaController {
 	private final PersonaService service = new PersonaService();
+
+	private Logger log = LoggerFactory.getLogger(PersonaController.class);
 
 	@PostMapping("/persona")
 	public ResponseEntity<Response<Persona>> create(@RequestBody Persona persona) {
@@ -30,22 +34,23 @@ public final class PersonaController {
 		} catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 			response.getMessages().add("No se ha podido registrar la persona");
-
+			log.error(exception.getMessage());
 		}
 		return new ResponseEntity<>(response, statusCode);
 	}
 
-	@GetMapping("/persona")
-	public ResponseEntity<Response<Persona>> list() {
+	@GetMapping("/personaById")
+	public ResponseEntity<Response<Persona>> listById(@RequestBody Persona persona) {
 
 		var statusCode = HttpStatus.OK;
 		Response<Persona> response;
 
 		try {
 			List<String> messages = new ArrayList<>();
-			List<Persona> list = service.consultar();
+			Persona personaConsultada = service.consultar(persona);
 
-			if (!list.isEmpty()) {
+			List<Persona> list = List.of(personaConsultada);
+			if (personaConsultada != null) {
 				messages.add("Personas consultadas exitosamente");
 
 			} else {
@@ -62,6 +67,37 @@ public final class PersonaController {
 		}
 
 		return new ResponseEntity<>(response,statusCode);
+	}
+	@GetMapping("/persona")
+	public ResponseEntity<Response<Persona>> listAll() {
+
+		var statusCode = HttpStatus.OK;
+		Response<Persona> response;
+
+		List<String> messages = null;
+		try {
+			messages = new ArrayList<>();
+			List<Persona> list = service.consultarTodas();
+
+			if (!list.isEmpty()) {
+				messages.add("Personas consultadas exitosamente");
+
+			} else {
+				statusCode = HttpStatus.NOT_FOUND;
+				messages.add("No hay personas para consular");
+			}
+
+			response = new Response<>(list, messages);
+
+		} catch (Exception exception) {
+			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+			response = new Response<>();
+			response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
+
+			log.error(exception.getMessage());
+		}
+
+		return new ResponseEntity<>(response, statusCode);
 	}
 
 	@PutMapping("/persona/{identificador}")
