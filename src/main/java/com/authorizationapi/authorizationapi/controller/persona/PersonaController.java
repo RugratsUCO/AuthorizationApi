@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1")
 public final class PersonaController {
+
 	@Autowired
 	private final PersonaService service = new PersonaService();
 

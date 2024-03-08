@@ -7,15 +7,17 @@ import java.util.UUID;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
 import com.authorizationapi.authorizationapi.service.organizacion.OrganizacionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("uconnect/api/v1")
+@RequestMapping("api/v1")
 public final class OrganizacionController {
 
+    @Autowired
     private final OrganizacionService service = new OrganizacionService();
     @PostMapping("/organizacion")
     public ResponseEntity<Response<Organizacion>> crearNueva(@RequestBody Organizacion organizacion) {
