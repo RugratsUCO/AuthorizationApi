@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilMessages;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.service.persona.PersonaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +18,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1")
 public final class PersonaController {
+	@Autowired
 	private final PersonaService service = new PersonaService();
 
-	private Logger log = LoggerFactory.getLogger(PersonaController.class);
+	private final Logger log = LoggerFactory.getLogger(PersonaController.class);
 
 	@PostMapping("/persona")
 	public ResponseEntity<Response<Persona>> create(@RequestBody Persona persona) {
@@ -29,12 +32,12 @@ public final class PersonaController {
 
 		try {
 			service.registrar(persona);
-			response.getMessages().add("La persona se ha registrado exitosamente");
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_REGISTRADA_FINAL);
 
 		} catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response.getMessages().add("No se ha podido registrar la persona");
-			log.error(exception.getMessage());
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_NO_REGISTRADA_FINAL);
+			log.error(UtilMessages.ControllerPersona.PERSONA_NO_REGISTRADA_TECNICO);
 		}
 		return new ResponseEntity<>(response, statusCode);
 	}
@@ -43,7 +46,7 @@ public final class PersonaController {
 	public ResponseEntity<Response<Persona>> listById(@RequestBody Persona persona) {
 
 		var statusCode = HttpStatus.OK;
-		Response<Persona> response;
+		Response<Persona> response = new Response<>();
 
 		try {
 			List<String> messages = new ArrayList<>();
@@ -51,11 +54,12 @@ public final class PersonaController {
 
 			List<Persona> list = List.of(personaConsultada);
 			if (personaConsultada != null) {
-				messages.add("Personas consultadas exitosamente");
+				messages.add(UtilMessages.ControllerPersona.PERSONAS_CONSULTADAS_FINAL);
 
 			} else {
 				statusCode = HttpStatus.NOT_FOUND;
-				messages.add("No hay personas para consular");
+				response.getMessages().add(UtilMessages.ControllerPersona.PERSONAS_NO_CONSULTADAS_FINAL);
+				log.error((UtilMessages.ControllerPersona.PERSONAS_NO_CONSULTADAS_TECNICO));
 			}
 
 			response = new Response<>(list,messages);
@@ -63,7 +67,7 @@ public final class PersonaController {
 		}catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 			response = new Response<>();
-			response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_NO_CONSULTADA_INTERNO_FINAL);
 		}
 
 		return new ResponseEntity<>(response,statusCode);
