@@ -16,31 +16,31 @@ public final class Persona {
 	@Column(name = "identificador",nullable = false)
 	private UUID identificador;
 
-	@Column(name = "tipoIdentificacion")
+	@Column(name = "\"tipoIdentificacion\"")
 	private String tipoIdentificacion;
 
-	@Column(name = "numeroIdentificacion")
+	@Column(name = "\"numeroIdentificacion\"")
 	private String numeroIdentificacion;
 
-	@Column(name = "primerNombre")
+	@Column(name = "\"primerNombre\"")
 	private String primerNombre;
 
-	@Column(name = "segundoNombre")
+	@Column(name = "\"segundoNombre\"")
 	private String segundoNombre;
 
-	@Column(name = "primerApellido")
+	@Column(name = "\"primerApellido\"")
 	private String primerApellido;
 
-	@Column(name = "segundoApellido")
+	@Column(name = "\"segundoApellido\"")
 	private String segundoApellido;
 
 	@Column(name = "correo")
 	private String correo;
 
-	@Column(name = "paisTelefono")
+	@Column(name = "\"paisTelefono\"")
 	private String paisTelefono;
 
-	@Column(name = "numeroTelefono")
+	@Column(name = "\"numeroTelefono\"")
 	private String numeroTelefono;
 
 	@Column(name = "activo")
