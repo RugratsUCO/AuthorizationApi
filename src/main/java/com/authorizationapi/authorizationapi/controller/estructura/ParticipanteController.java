@@ -7,14 +7,17 @@ import java.util.UUID;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.domain.estructura.Participante;
 import com.authorizationapi.authorizationapi.service.estructura.ParticipanteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("uconnect/api/v1")
+@RequestMapping("authorization/api/v1")
 public final class ParticipanteController {
+
+	@Autowired
 	private final ParticipanteService service = new ParticipanteService();
 	@PostMapping("/participante")
 	public ResponseEntity<Response<Participante>> registrar(@RequestBody Participante participante) {

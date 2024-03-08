@@ -3,6 +3,7 @@ package com.authorizationapi.authorizationapi.controller.organizacion;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.service.organizacion.AdministradorOrganizacionEncargadoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("authorization/api/v1")
 public final class AdministradorOrganizacionEncargadoController {
 
-   private final AdministradorOrganizacionEncargadoService service = new AdministradorOrganizacionEncargadoService();
+    @Autowired
+    private final AdministradorOrganizacionEncargadoService service = new AdministradorOrganizacionEncargadoService();
 
     @PostMapping("/administradororganizacion")
     public ResponseEntity<Response<AdministradorOrganizacionEncargado>> concederPermisos(@RequestBody AdministradorOrganizacionEncargado administrador) {

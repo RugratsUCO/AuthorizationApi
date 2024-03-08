@@ -7,14 +7,17 @@ import java.util.UUID;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
 import com.authorizationapi.authorizationapi.service.estructura.GrupoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("uconnect/api/v1")
+@RequestMapping("authorization/api/v1")
 public final class GrupoController {
+
+    @Autowired
     private final GrupoService service = new GrupoService();
     @PostMapping("/grupo")
     public ResponseEntity<Response<Grupo>> crear(@RequestBody Grupo grupo) {
