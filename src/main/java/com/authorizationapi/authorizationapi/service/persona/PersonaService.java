@@ -1,6 +1,7 @@
 package com.authorizationapi.authorizationapi.service.persona;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.ServiceException;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.repository.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public final class PersonaService {
             repository.save(personaExistente);
         } else {
 
-            throw new RuntimeException("Participante no encontrado con el identificador: " + identificador);
+            throw ServiceException.create("Participante no encontrado con el identificador: " + identificador);
         }
     }
 

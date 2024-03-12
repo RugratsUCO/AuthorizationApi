@@ -1,6 +1,7 @@
 package com.authorizationapi.authorizationapi.service.estructura;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.ServiceException;
 import com.authorizationapi.authorizationapi.domain.estructura.Participante;
 import com.authorizationapi.authorizationapi.repository.ParticipanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public final class ParticipanteService {
             repository.save(participanteExistente);
         } else {
 
-            throw new RuntimeException("Participante no encontrado con el identificador: " + identificador);
+            throw ServiceException.create("Participante no encontrado con el identificador: " + identificador);
         }
     }
 
