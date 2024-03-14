@@ -10,7 +10,7 @@ public class UtilBoolean {
     }
 
     public static final Boolean isNull(Boolean bool){
-        return UtilObject.isNull(bool) ? false : bool;
+        return !UtilObject.isNull(bool) && bool;
     }
 
     public static final Boolean convertFromString(String bool) {
@@ -22,7 +22,7 @@ public class UtilBoolean {
     }
 
     public static final Boolean getDefault(Boolean bool){
-        return isNull(bool) ? getDefaultValue() : bool;
+        return !UtilObject.isNull(bool) && bool ? getDefaultValue() : bool;
     }
 
     public static final Boolean getTrue(){

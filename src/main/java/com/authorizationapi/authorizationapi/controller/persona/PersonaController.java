@@ -85,11 +85,11 @@ public final class PersonaController {
 			List<Persona> list = service.consultarTodas();
 
 			if (!list.isEmpty()) {
-				messages.add("Personas consultadas exitosamente");
+				messages.add(UtilMessages.ControllerPersona.PERSONAS_CONSULTADAS_FINAL);
 
 			} else {
 				statusCode = HttpStatus.NOT_FOUND;
-				messages.add("No hay personas para consular");
+				messages.add(UtilMessages.ControllerPersona.NO_PERSONAS_PARA_CONSULTAR);
 			}
 
 			response = new Response<>(list, messages);
@@ -97,7 +97,7 @@ public final class PersonaController {
 		} catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 			response = new Response<>();
-			response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONAS_NO_CONSULTADAS_INTERNO_FINAL);
 
 			log.error(exception.getMessage());
 		}
@@ -113,11 +113,11 @@ public final class PersonaController {
 
 		try {
 			service.editar(identificador,persona);
-			response.getMessages().add("Se ha cambiado la informacion de la persona satisfactoriamente");
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_ACTUALIZADA_FINAL);
 
 		}catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response.getMessages().add("No se ha podido cambiar la informacion");
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_NO_ACTUALIZADA_FINAL);
 		}
 
 		return new ResponseEntity<>(response,statusCode);
@@ -130,11 +130,11 @@ public final class PersonaController {
 
 		try {
 			service.eliminar(persona);
-			response.getMessages().add("La persona se ha podido eliminar satisfactoriamente");
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_ELIMINADA_FINAL);
 
 		}catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response.getMessages().add("No se ha podido eliminar a la persona");
+			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_NO_ELIMINADA_FINAL);
 		}
 
 		return new ResponseEntity<>(response,statusCode);

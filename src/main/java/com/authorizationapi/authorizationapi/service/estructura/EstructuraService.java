@@ -1,6 +1,7 @@
 package com.authorizationapi.authorizationapi.service.estructura;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.ServiceException;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
 import com.authorizationapi.authorizationapi.repository.EstructuraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public final class EstructuraService {
             repository.save(estructuraExistente);
         } else {
 
-            throw new RuntimeException("Estructura no encontrada con el identificador: " + identificador);
+            throw ServiceException.create("Estructura no encontrada con el identificador: " + identificador);
         }
     }
 
@@ -43,7 +44,7 @@ public final class EstructuraService {
             repository.save(estructuraExistente);
         } else {
 
-            throw new RuntimeException("Estructura no encontrada con el identificador: " + identificador);
+            throw ServiceException.create("Estructura no encontrada con el identificador: " + identificador);
         }
     }
 

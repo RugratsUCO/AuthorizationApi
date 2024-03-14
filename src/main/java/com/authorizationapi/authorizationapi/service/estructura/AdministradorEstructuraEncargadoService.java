@@ -1,5 +1,6 @@
 package com.authorizationapi.authorizationapi.service.estructura;
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.ServiceException;
 import com.authorizationapi.authorizationapi.domain.estructura.AdministradorEstructuraEncargado;
 import com.authorizationapi.authorizationapi.repository.AdministradorEstructuraEncargadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public final class AdministradorEstructuraEncargadoService {
             repository.save(administradorExistente);
         } else {
 
-            throw new RuntimeException("Administrador no encontrado con el identificador: " + identificador);
+            throw ServiceException.create("Administrador no encontrado con el identificador: " + identificador);
         }
 
     }

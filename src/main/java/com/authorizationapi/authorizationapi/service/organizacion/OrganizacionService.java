@@ -1,6 +1,7 @@
 package com.authorizationapi.authorizationapi.service.organizacion;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.ServiceException;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
 import com.authorizationapi.authorizationapi.repository.OrganizacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public final class OrganizacionService {
             repository.save(organizacionExistente);
         } else {
 
-            throw new RuntimeException("Organizacion no encontrada con el identificador: " + identificador);
+            throw ServiceException.create("Organizacion no encontrada con el identificador: " + identificador);
         }
     }
 
@@ -46,7 +47,7 @@ public final class OrganizacionService {
             repository.save(organizacionExistente);
         } else {
 
-            throw new RuntimeException("Organizacion no encontrada con el identificador: " + identificador);
+            throw ServiceException.create("Organizacion no encontrada con el identificador: " + identificador);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.authorizationapi.authorizationapi.service.organizacion;
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.ServiceException;
 import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.repository.AdministradorOrganizacionEncargadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public final class AdministradorOrganizacionEncargadoService {
             repository.save(administradorExistente);
         } else {
 
-            throw new RuntimeException("Administrador organizacion no encontrado con el identificador: " + identificador);
+            throw ServiceException.create("Administrador organizacion no encontrado con el identificador: " + identificador);
         }
     }
 
