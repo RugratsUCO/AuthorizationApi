@@ -1,6 +1,9 @@
 package com.authorizationapi.authorizationapi.service.estructura;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.estructura.Participante;
 import com.authorizationapi.authorizationapi.repository.ParticipanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,14 @@ public final class ParticipanteService {
     @Autowired
     private ParticipanteRepository repository;
     public void registrar(Participante participante) {
+        UUID identificador;
+        Optional<Participante> participanteOptional;
+        do {
+            identificador = UtilUUID.generateNewUUID();
+            participanteOptional = repository.findById(identificador);
+        } while (participanteOptional.isPresent());
+        participante.setIdentificador(identificador);
+
         repository.save(participante);
     }
 
@@ -30,7 +41,7 @@ public final class ParticipanteService {
             repository.save(participanteExistente);
         } else {
 
-            throw new RuntimeException("Participante no encontrado con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceParticipante.PARTICIPANTE_NO_ENCONTRADO);
         }
     }
 
@@ -42,7 +53,13 @@ public final class ParticipanteService {
 
 
     public void eliminar(Participante participante) {
-        repository.delete(participante);
+        Optional<Participante> participanteOptional = repository.findById(participante.getIdentificador());
+
+        if (participanteOptional.isPresent()) {
+            repository.delete(participante);
+        } else {
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceParticipante.PARTICIPANTE_NO_ENCONTRADO_IDENTIFICADOR + participante.getIdentificador());
+        }
     }
 
 }

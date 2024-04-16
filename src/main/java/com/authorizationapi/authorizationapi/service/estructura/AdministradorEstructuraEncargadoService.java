@@ -1,5 +1,8 @@
 package com.authorizationapi.authorizationapi.service.estructura;
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.estructura.AdministradorEstructuraEncargado;
 import com.authorizationapi.authorizationapi.repository.AdministradorEstructuraEncargadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,14 @@ public final class AdministradorEstructuraEncargadoService {
     @Autowired
     private AdministradorEstructuraEncargadoRepository repository;
     public void concederPermisos(AdministradorEstructuraEncargado administrador) {
+        UUID identificador;
+        Optional<AdministradorEstructuraEncargado> administradorOptional;
+        do {
+            identificador = UtilUUID.generateNewUUID();
+            administradorOptional = repository.findById(identificador);
+        } while (administradorOptional.isPresent());
+        administrador.setIdentificador(identificador);
+
         repository.save(administrador);
     }
 
@@ -30,7 +41,7 @@ public final class AdministradorEstructuraEncargadoService {
             repository.save(administradorExistente);
         } else {
 
-            throw new RuntimeException("Administrador no encontrado con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceAdministradorEstructuraEncargado.ADMINISTRADOR_ESTRUCTURA_NO_ENCONTRADO_IDENTIFICADOR + identificador);
         }
 
     }
@@ -39,9 +50,16 @@ public final class AdministradorEstructuraEncargadoService {
         return repository.findAll();
     }
 
-    public void eliminar(AdministradorEstructuraEncargado administradorEstructuraEncargado) {
-        repository.delete(administradorEstructuraEncargado);
+    public void eliminar(AdministradorEstructuraEncargado administrador) {
+        Optional<AdministradorEstructuraEncargado> administradorOptional = repository.findById(administrador.getIdentificador());
+
+        if (administradorOptional.isPresent()) {
+            repository.delete(administrador);
+        } else {
+
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceAdministradorEstructuraEncargado.ADMINISTRADOR_ESTRUCTURA_NO_ENCONTRADO);
+        }
     }
 
-  
+
 }

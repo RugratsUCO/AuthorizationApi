@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.ParticipanteGrupo;
 import com.authorizationapi.authorizationapi.service.estructura.ParticipanteGrupoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,11 @@ public final class ParticipanteGrupoController {
 
         try {
             service.asignarGrupo(participante);
-            response.getMessages().add("El participante se ha asignado al grupo exitosamente");
+            response.getMessages().add(UtilMessagesController.ControllerParticipanteGrupo.PARTICIPANTE_GRUPO_CREADO_FINAL);
 
         } catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido asignar el grupo al participante");
+            response.getMessages().add(UtilMessagesController.ControllerParticipanteGrupo.PARTICIPANTE_GRUPO_NO_CREADO_FINAL);
 
         }
         return new ResponseEntity<>(response, statusCode);
@@ -47,11 +48,11 @@ public final class ParticipanteGrupoController {
             List<ParticipanteGrupo> list = service.consultar();
 
             if (!list.isEmpty()) {
-                messages.add("Participantes consultados exitosamente");
+                messages.add(UtilMessagesController.ControllerParticipanteGrupo.PARTICIPANTES_GRUPO_CONSULTADOS_FINAL);
 
             } else {
                 statusCode = HttpStatus.NOT_FOUND;
-                messages.add("No hay participantes para consultar");
+                messages.add(UtilMessagesController.ControllerParticipanteGrupo.PARTICIPANTES_GRUPO_NO_CONSULTADOS_FINAL);
             }
 
             response = new Response<>(list,messages);
@@ -59,7 +60,7 @@ public final class ParticipanteGrupoController {
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response = new Response<>();
-            response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
+            response.getMessages().add(UtilMessagesController.ControllerParticipanteGrupo.PARTICIPANTES_GRUPO_NO_CONSULTADOS_INTERNO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
@@ -72,14 +73,14 @@ public final class ParticipanteGrupoController {
 
         try {
             service.eliminar(participante);
-            response.getMessages().add("El participante se ha podido eliminar del grupo satisfactoriamente");
+            response.getMessages().add(UtilMessagesController.ControllerParticipanteGrupo.PARTICIPANTE_GRUPO_ELIMINADO);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido eliminar al participante del grupo");
+            response.getMessages().add(UtilMessagesController.ControllerParticipanteGrupo.PARTICIPANTE_GRUPO_NO_ELIMINADO);
         }
 
         return new ResponseEntity<>(response,statusCode);
     }
-	
+
 }

@@ -1,5 +1,8 @@
 package com.authorizationapi.authorizationapi.service.estructura;
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
 import com.authorizationapi.authorizationapi.repository.GrupoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,14 @@ public final class GrupoService {
     @Autowired
     private GrupoRepository repository;
     public void crear(Grupo grupo) {
+        UUID identificador;
+        Optional<Grupo> grupoOptional;
+        do {
+            identificador = UtilUUID.generateNewUUID();
+            grupoOptional = repository.findById(identificador);
+        } while (grupoOptional.isPresent());
+        grupo.setIdentificador(identificador);
+
         repository.save(grupo);
     }
 
@@ -30,7 +41,7 @@ public final class GrupoService {
             repository.save(grupoExistente);
         } else {
 
-            throw new RuntimeException("Grupo no encontrado con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceGrupo.GRUPO_NO_ENCONTRADO + identificador);
         }
     }
 
@@ -45,7 +56,7 @@ public final class GrupoService {
             repository.save(grupoExistente);
         } else {
 
-            throw new RuntimeException("Grupo no encontrado con el identificador: " + identificador);
+            throw new RuntimeException(UtilMessagesService.ServiceGrupo.GRUPO_NO_ENCONTRADO_IDENTIFICADOR + identificador);
         }
     }
 
@@ -54,7 +65,13 @@ public final class GrupoService {
     }
 
     public void eliminar(Grupo grupo) {
-        repository.delete(grupo);
+        Optional<Grupo> grupoOptional = repository.findById(grupo.getIdentificador());
+
+        if (grupoOptional.isPresent()) {
+            repository.delete(grupo);
+        } else {
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceGrupo.GRUPO_NO_ENCONTRADO);
+        }
     }
 
 }

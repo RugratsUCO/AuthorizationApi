@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
 import com.authorizationapi.authorizationapi.service.estructura.GrupoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,11 @@ public final class GrupoController {
 
         try {
             service.crear(grupo);
-            response.getMessages().add("El grupo se ha registrado exitosamente");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_CREADO_FINAL);
 
         } catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido registrar el grupo");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_NO_CREADO_FINAL);
 
         }
         return new ResponseEntity<>(response, statusCode);
@@ -48,11 +49,11 @@ public final class GrupoController {
             List<Grupo> list = service.buscar();
 
             if (!list.isEmpty()) {
-                messages.add("Grupos consultados exitosamente");
+                messages.add(UtilMessagesController.ControllerGrupo.GRUPOS_CONSULTADOS_FINAL);
 
             } else {
                 statusCode = HttpStatus.NOT_FOUND;
-                messages.add("No hay grupos para consultar");
+                messages.add(UtilMessagesController.ControllerGrupo.GRUPOS_NO_CONSULTADOS_FINAL);
             }
 
             response = new Response<>(list,messages);
@@ -60,7 +61,7 @@ public final class GrupoController {
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response = new Response<>();
-            response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPOS_NO_CONSULTADOS_INTERNO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
@@ -73,11 +74,11 @@ public final class GrupoController {
 
         try {
             service.cambiarEstado(identificador, grupo);
-            response.getMessages().add("Se ha cambiado el estado del grupo satisfactoriamente");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_ESTADO_EDITADO_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido cambiar el estado");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_ESTADO_NO_EDITADO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
@@ -90,11 +91,11 @@ public final class GrupoController {
 
         try {
             service.editar(identificador, grupo);
-            response.getMessages().add("Se han cambiado los datos del grupo satisfactoriamente");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_DATOS_EDITADOS_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido cambiar los datos del grupo");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_DATOS_NO_EDITADOS_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
@@ -107,11 +108,11 @@ public final class GrupoController {
 
         try {
             service.eliminar(grupo);
-            response.getMessages().add("El grupo se ha podido eliminar satisfactoriamente");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_ELIMINADO_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido eliminar al grupo");
+            response.getMessages().add(UtilMessagesController.ControllerGrupo.GRUPO_NO_ELIMINADO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);

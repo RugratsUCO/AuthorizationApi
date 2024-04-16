@@ -22,7 +22,7 @@ public final class Estructura {
 	private Organizacion organizacion;
 
 	@ManyToOne
-	@JoinColumn(name = "estructuraPadre")
+	@JoinColumn(name = "\"estructuraPadre\"")
 	private Estructura estructuraPadre;
 
 	@Column(name = "nombre", nullable = false)
@@ -31,7 +31,7 @@ public final class Estructura {
 	@Column(name = "activo", nullable = false)
 	private boolean activo;
 
-	@Column(name = "tienePadre", nullable = false)
+	@Column(name = "\"tienePadre\"", nullable = false)
 	private boolean tienePadre;
 
 	private static final String UUID_PADRE = "";

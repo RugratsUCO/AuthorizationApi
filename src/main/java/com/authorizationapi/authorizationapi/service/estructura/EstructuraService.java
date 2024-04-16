@@ -1,6 +1,10 @@
 package com.authorizationapi.authorizationapi.service.estructura;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
 import com.authorizationapi.authorizationapi.repository.EstructuraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,14 @@ public final class EstructuraService {
     @Autowired
     private EstructuraRepository repository;
     public void crearNueva(Estructura estructura) {
+        UUID identificador;
+        Optional<Estructura> estructuraOptional;
+        do {
+            identificador = UtilUUID.generateNewUUID();
+            estructuraOptional = repository.findById(identificador);
+        } while (estructuraOptional.isPresent());
+        estructura.setIdentificador(identificador);
+
         repository.save(estructura);
     }
 
@@ -29,21 +41,21 @@ public final class EstructuraService {
             repository.save(estructuraExistente);
         } else {
 
-            throw new RuntimeException("Estructura no encontrada con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceEstructura.ESTRUCTURA_NO_ENCONTRADA_IDENTIFICADOR + identificador);
         }
     }
 
-    public void cambiarEstado(UUID identificador, Estructura nuevaEstructuraNombre) {
+    public void cambiarEstado(UUID identificador) {
         Optional<Estructura> estructuraOptional = repository.findById(identificador);
 
         if (estructuraOptional.isPresent()) {
             Estructura estructuraExistente = estructuraOptional.get();
-            estructuraExistente.setActivo(nuevaEstructuraNombre.getActivo());
+            estructuraExistente.setActivo(UtilBoolean.getOpposite(estructuraExistente.getActivo()));
 
             repository.save(estructuraExistente);
         } else {
 
-            throw new RuntimeException("Estructura no encontrada con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceEstructura.ESTRUCTURA_NO_ENCONTRADA_IDENTIFICADOR + identificador);
         }
     }
 
@@ -52,8 +64,12 @@ public final class EstructuraService {
     }
 
     public void eliminar(Estructura estructura) {
-        repository.delete(estructura);
-    }
+        Optional<Estructura> estructuraOptional = repository.findById(estructura.getIdentificador());
 
- 
+        if (estructuraOptional.isPresent()) {
+            repository.delete(estructura);
+        } else {
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceEstructura.ESTRUCTURA_NO_ENCONTRADA);
+        }
+    }
 }

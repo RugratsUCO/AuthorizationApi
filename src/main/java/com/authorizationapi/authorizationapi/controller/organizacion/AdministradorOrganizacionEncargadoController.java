@@ -1,8 +1,11 @@
 package com.authorizationapi.authorizationapi.controller.organizacion;
 
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.service.organizacion.AdministradorOrganizacionEncargadoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,9 @@ public final class AdministradorOrganizacionEncargadoController {
     @Autowired
     private final AdministradorOrganizacionEncargadoService service = new AdministradorOrganizacionEncargadoService();
 
+    private final Logger log = LoggerFactory.getLogger(AdministradorOrganizacionEncargadoController.class);
+
+
     @PostMapping("/administradororganizacion")
     public ResponseEntity<Response<AdministradorOrganizacionEncargado>> concederPermisos(@RequestBody AdministradorOrganizacionEncargado administrador) {
 
@@ -28,11 +34,11 @@ public final class AdministradorOrganizacionEncargadoController {
 
         try {
             service.concederPermisos(administrador);
-            response.getMessages().add("El administrador se ha registrado exitosamente");
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_CREADO_FINAL);
 
         } catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido registrar el administrador");
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_NO_CREADO_FINAL);
 
         }
         return new ResponseEntity<>(response, statusCode);
@@ -48,11 +54,11 @@ public final class AdministradorOrganizacionEncargadoController {
             List<AdministradorOrganizacionEncargado> list = service.consultar();
 
             if (!list.isEmpty()) {
-                messages.add("Administradores de organizacion consultados exitosamente");
+                messages.add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_CONSULTADO_FINAL);
 
             } else {
                 statusCode = HttpStatus.NOT_FOUND;
-                messages.add("No hay administradores organizacion para consultar");
+                messages.add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_NO_CONSULTADO_FINAL);
             }
 
             response = new Response<>(list,messages);
@@ -60,7 +66,8 @@ public final class AdministradorOrganizacionEncargadoController {
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response = new Response<>();
-            response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_NO_CONSULTADO_INTERNO_FINAL);
+            log.error(exception.getMessage());
         }
 
         return new ResponseEntity<>(response,statusCode);
@@ -72,16 +79,35 @@ public final class AdministradorOrganizacionEncargadoController {
         var response = new Response<AdministradorOrganizacionEncargado>();
 
         try {
-            service.cambiarEstado(identificador, administrador);
-            response.getMessages().add("Se ha cambiado el estado del administrador satisfactoriamente");
+            service.cambiarEstado(identificador);
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_ESTADO_EDITADO_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido cambiar el estado");
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_ESTADO_NO_EDITADO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
     }
+
+    @PatchMapping("/administradororganizacion/{identificador}")
+    public ResponseEntity<Response<AdministradorOrganizacionEncargado>> changeStatus(@PathVariable UUID identificador) {
+        var statusCode = HttpStatus.OK;
+        var response = new Response<AdministradorOrganizacionEncargado>();
+
+        try {
+            service.cambiarEstado(identificador);
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_ESTADO_EDITADO_FINAL);
+
+        }catch (Exception exception) {
+            log.error(exception.getMessage());
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_ESTADO_NO_EDITADO_FINAL);
+        }
+
+        return new ResponseEntity<>(response,statusCode);
+    }
+
     @DeleteMapping("/administradororganizacion/{identificador}")
     public ResponseEntity<Response<AdministradorOrganizacionEncargado>> eliminar(@RequestBody AdministradorOrganizacionEncargado administrador) {
 
@@ -90,11 +116,11 @@ public final class AdministradorOrganizacionEncargadoController {
 
         try {
             service.eliminar(administrador);
-            response.getMessages().add("El administrador de la organizacion se ha podido eliminar satisfactoriamente");
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_ELIMINADO_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido eliminar al administrador de la organizacion");
+            response.getMessages().add(UtilMessagesController.ControllerAdministradorOrganizacionEncargado.ADMINISTRADOR_ORGANIZACION_ENCARGADO_NO_ELIMINADO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);

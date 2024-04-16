@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import com.authorizationapi.authorizationapi.controller.response.Response;
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilMessages;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationException;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.service.persona.PersonaService;
 import org.slf4j.Logger;
@@ -33,12 +35,16 @@ public final class PersonaController {
 
 		try {
 			service.registrar(persona);
-			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_REGISTRADA_FINAL);
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_REGISTRADA_FINAL);
 
+		} catch (AuthorizationException exception) {
+			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_NO_REGISTRADA_FINAL);
+			log.error(exception.getTechnicalMessage());
 		} catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_NO_REGISTRADA_FINAL);
-			log.error(UtilMessages.ControllerPersona.PERSONA_NO_REGISTRADA_TECNICO);
+			response.getMessages().add(exception.getMessage());
+			log.error(UtilMessagesController.ControllerPersona.PERSONA_NO_REGISTRADA_TECNICO);
 		}
 		return new ResponseEntity<>(response, statusCode);
 	}
@@ -55,20 +61,24 @@ public final class PersonaController {
 
 			List<Persona> list = List.of(personaConsultada);
 			if (personaConsultada != null) {
-				messages.add(UtilMessages.ControllerPersona.PERSONAS_CONSULTADAS_FINAL);
+				messages.add(UtilMessagesController.ControllerPersona.PERSONAS_CONSULTADAS_FINAL);
 
 			} else {
 				statusCode = HttpStatus.NOT_FOUND;
-				response.getMessages().add(UtilMessages.ControllerPersona.PERSONAS_NO_CONSULTADAS_FINAL);
-				log.error((UtilMessages.ControllerPersona.PERSONAS_NO_CONSULTADAS_TECNICO));
+				response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONAS_NO_CONSULTADAS_FINAL);
+				log.error((UtilMessagesController.ControllerPersona.PERSONAS_NO_CONSULTADAS_TECNICO));
 			}
 
 			response = new Response<>(list,messages);
 
-		}catch (Exception exception) {
+		} catch (AuthorizationException exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response = new Response<>();
-			response.getMessages().add(UtilMessages.ControllerPersona.PERSONA_NO_CONSULTADA_INTERNO_FINAL);
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_NO_CONSULTADA_INTERNO_FINAL);
+			log.error(exception.getTechnicalMessage());
+		} catch (Exception exception) {
+			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+			response.getMessages().add(exception.getMessage());
+			log.error(UtilMessagesController.ControllerPersona.PERSONAS_NO_CONSULTADAS_TECNICO);
 		}
 
 		return new ResponseEntity<>(response,statusCode);
@@ -85,11 +95,11 @@ public final class PersonaController {
 			List<Persona> list = service.consultarTodas();
 
 			if (!list.isEmpty()) {
-				messages.add("Personas consultadas exitosamente");
+				messages.add(UtilMessagesController.ControllerPersona.PERSONAS_CONSULTADAS_FINAL);
 
 			} else {
 				statusCode = HttpStatus.NOT_FOUND;
-				messages.add("No hay personas para consular");
+				messages.add(UtilMessagesController.ControllerPersona.NO_PERSONAS_PARA_CONSULTAR_FINAL);
 			}
 
 			response = new Response<>(list, messages);
@@ -97,8 +107,7 @@ public final class PersonaController {
 		} catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 			response = new Response<>();
-			response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
-
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONAS_NO_CONSULTADAS_INTERNO_FINAL);
 			log.error(exception.getMessage());
 		}
 
@@ -113,15 +122,35 @@ public final class PersonaController {
 
 		try {
 			service.editar(identificador,persona);
-			response.getMessages().add("Se ha cambiado la informacion de la persona satisfactoriamente");
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_ACTUALIZADA_FINAL);
 
 		}catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response.getMessages().add("No se ha podido cambiar la informacion");
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_NO_ACTUALIZADA_FINAL);
 		}
 
 		return new ResponseEntity<>(response,statusCode);
 	}
+
+	@PatchMapping("/persona/{identificador}")
+	public ResponseEntity<Response<Persona>> changeStatus(@PathVariable UUID identificador) {
+		var statusCode = HttpStatus.OK;
+		var response = new Response<Persona>();
+		//UUID identificadorUUID = UtilUUID.geneateUUIDFromString(identificador);
+
+		try {
+			service.cambiarEstado(identificador);
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_ACTUALIZADA_FINAL);
+
+		}catch (Exception exception) {
+			log.error(exception.getMessage());
+			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_NO_ELIMINADA_FINAL);
+		}
+
+		return new ResponseEntity<>(response,statusCode);
+	}
+
 	@DeleteMapping("/persona")
 	public ResponseEntity<Response<Persona>> drop(@RequestBody Persona persona) {
 
@@ -130,11 +159,11 @@ public final class PersonaController {
 
 		try {
 			service.eliminar(persona);
-			response.getMessages().add("La persona se ha podido eliminar satisfactoriamente");
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_ELIMINADA_FINAL);
 
 		}catch (Exception exception) {
 			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-			response.getMessages().add("No se ha podido eliminar a la persona");
+			response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_NO_ELIMINADA_FINAL);
 		}
 
 		return new ResponseEntity<>(response,statusCode);

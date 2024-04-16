@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
+import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.service.organizacion.OrganizacionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,8 @@ public final class OrganizacionController {
 
     @Autowired
     private final OrganizacionService service = new OrganizacionService();
+    private final Logger log = LoggerFactory.getLogger(OrganizacionController.class);
+
     @PostMapping("/organizacion")
     public ResponseEntity<Response<Organizacion>> crearNueva(@RequestBody Organizacion organizacion) {
 
@@ -28,12 +34,12 @@ public final class OrganizacionController {
 
         try {
             service.crearNueva(organizacion);
-            response.getMessages().add("La organizacion se ha creado exitosamente");
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_CREADA_FINAL);
 
         } catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido crear la organizacion");
-
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_NO_CREADA_FINAL);
+            log.error((UtilMessagesController.ControllerOrganizacion.ORGANIZACION_NO_REGISTRADA_TECNICO));
         }
         return new ResponseEntity<>(response, statusCode);
     }
@@ -48,11 +54,11 @@ public final class OrganizacionController {
             List<Organizacion> list = service.consultar();
 
             if (!list.isEmpty()) {
-                messages.add("Organizaciones consultadas exitosamente");
+                messages.add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_CONSULDATAS_FINAL);
 
             } else {
                 statusCode = HttpStatus.NOT_FOUND;
-                messages.add("No hay organizaciones para consultar");
+                messages.add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_NO_CONSULTADAS_FINAL);
             }
 
             response = new Response<>(list,messages);
@@ -60,7 +66,7 @@ public final class OrganizacionController {
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response = new Response<>();
-            response.getMessages().add("Error interno, no se ha podido realizar la consulta correctamente");
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_NO_CONSULTADAS_INTERNO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
@@ -73,11 +79,11 @@ public final class OrganizacionController {
 
         try {
             service.cambiarNombre(identificador, organizacion);
-            response.getMessages().add("Se ha cambiado el nombre de la organizacion satisfactoriamente");
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_NOMBRE_EDITADO_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido cambiar el nombre de la organizacion");
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_NOMBRE_NO_EDITADO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
@@ -89,16 +95,35 @@ public final class OrganizacionController {
         var response = new Response<Organizacion>();
 
         try {
-            service.cambiarEstado(identificador, organizacion);
-            response.getMessages().add("Se ha cambiado el estado de la organizacion satisfactoriamente");
+            service.cambiarNombre(identificador, organizacion);
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_NOMBRE_EDITADO_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido cambiar el estado de la organizacion");
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_NOMBRE_NO_EDITADO_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);
     }
+
+    @PatchMapping("/organizacion/{identificador}")
+    public ResponseEntity<Response<Organizacion>> changeStatus(@PathVariable UUID identificador) {
+        var statusCode = HttpStatus.OK;
+        var response = new Response<Organizacion>();
+
+        try {
+            service.cambiarEstado(identificador);
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_ESTADO_ACTUALIZADO_FINAL);
+
+        }catch (Exception exception) {
+            log.error(exception.getMessage());
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_ESTADO_NO_ACTUALIZADO_FINAL);
+        }
+
+        return new ResponseEntity<>(response,statusCode);
+    }
+
     @DeleteMapping("/organizacion/{identificador}")
     public ResponseEntity<Response<Organizacion>> eliminar(@RequestBody Organizacion organizacion) {
 
@@ -107,11 +132,11 @@ public final class OrganizacionController {
 
         try {
             service.eliminar(organizacion);
-            response.getMessages().add("La organizacion se ha podido eliminar satisfactoriamente");
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_ELIMINADA_FINAL);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.getMessages().add("No se ha podido eliminar la organizacion");
+            response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACION_NO_ELIMINADA_FINAL);
         }
 
         return new ResponseEntity<>(response,statusCode);

@@ -9,7 +9,7 @@ import java.util.List;
 public class Response<T> {
 	private List<T> data;
 	private List<String> messages;
-	
+
 	public Response(List<T> data, List<String> messages) {
 		super();
 		setData(data);
@@ -32,7 +32,7 @@ public class Response<T> {
 	public void setMessages(List<String> messages) {
 		this.messages = UtilObject.getDefault(messages, new ArrayList<>());
 	}
-	
-	
-	
+
+
+
 }

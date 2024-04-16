@@ -3,9 +3,12 @@ package com.authorizationapi.authorizationapi.domain.organizacion;
 
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 
 import jakarta.persistence.*;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "Administradororganizacionencargado")
@@ -13,7 +16,7 @@ public final class AdministradorOrganizacionEncargado {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "identificador",nullable = false)
-    private String identificador;
+    private UUID identificador;
 
     @ManyToOne
     @JoinColumn(name = "persona")
@@ -28,13 +31,13 @@ public final class AdministradorOrganizacionEncargado {
 
     public AdministradorOrganizacionEncargado(){
 		super();
-        setIdentificador("");
+        setIdentificador(UtilUUID.getDefaultValue());
         setPersona(Persona.create());
         setActivo(UtilBoolean.getDefaultValue());
         setOrganizacion(Organizacion.create());
     }
 
-    public AdministradorOrganizacionEncargado(String identificador, Persona persona, boolean estaActivo, Organizacion organizacion){
+    public AdministradorOrganizacionEncargado(UUID identificador, Persona persona, boolean estaActivo, Organizacion organizacion){
         super();
         setIdentificador(identificador);
         setPersona(persona);
@@ -42,7 +45,7 @@ public final class AdministradorOrganizacionEncargado {
         setOrganizacion(organizacion);
     }
 
-    public AdministradorOrganizacionEncargado setIdentificador(final String identificador) {
+    public AdministradorOrganizacionEncargado setIdentificador(final UUID identificador) {
         this.identificador = identificador;
         return this;
     }
@@ -60,7 +63,7 @@ public final class AdministradorOrganizacionEncargado {
         return this;
     }
 
-    public String getIdentificador() {
+    public UUID getIdentificador() {
         return identificador;
     }
 

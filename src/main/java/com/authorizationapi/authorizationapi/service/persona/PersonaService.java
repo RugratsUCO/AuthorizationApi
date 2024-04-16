@@ -1,6 +1,9 @@
 package com.authorizationapi.authorizationapi.service.persona;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.repository.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,7 @@ public final class PersonaService {
             repository.save(personaExistente);
         } else {
 
-            throw new RuntimeException("Participante no encontrado con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServicePersona.PERSONA_NO_ENCONTRADA_IDENTIFICADOR + identificador);
         }
     }
 
@@ -45,7 +48,27 @@ public final class PersonaService {
         return repository.findAll();
     }
 
+    public void cambiarEstado(UUID identificador) {
+        Optional<Persona> personaOptional = repository.findById(identificador);
+
+        if (personaOptional.isPresent()){
+            Persona personaExistente = personaOptional.get();
+            personaExistente.setActivo(UtilBoolean.getOpposite(personaExistente.getActivo()));
+
+            repository.save(personaExistente);
+        } else {
+
+            throw AuthorizationServiceException.create(UtilMessagesService.ServicePersona.PERSONA_NO_ENCONTRADA_IDENTIFICADOR + identificador);
+        }
+    }
+
     public void eliminar(Persona persona) {
-        repository.delete(persona);
+        Optional<Persona> personaOptional = repository.findById(persona.getIdentificador());
+
+        if (personaOptional.isPresent()) {
+            repository.delete(persona);
+        } else {
+            throw AuthorizationServiceException.create(UtilMessagesService.ServicePersona.PERSONA_NO_ENCONTRADA);
+        }
     }
 }

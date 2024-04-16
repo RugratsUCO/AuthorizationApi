@@ -1,6 +1,9 @@
 package com.authorizationapi.authorizationapi.service.organizacion;
 
 
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
+import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
+import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
 import com.authorizationapi.authorizationapi.repository.OrganizacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,22 +34,21 @@ public final class OrganizacionService {
             repository.save(organizacionExistente);
         } else {
 
-            throw new RuntimeException("Organizacion no encontrada con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceOrganizacion.ORGANIZATION_NO_ENCONTRADA_IDENTIFICADOR + identificador);
         }
     }
 
 
-    public void cambiarEstado(UUID identificador, Organizacion nuevaOrganizacion) {
+    public void cambiarEstado(UUID identificador) {
         Optional<Organizacion> organizacionOptional = repository.findById(identificador);
 
         if (organizacionOptional.isPresent()) {
             Organizacion organizacionExistente = organizacionOptional.get();
-            organizacionExistente.setActivo(nuevaOrganizacion.getActivo());
+            organizacionExistente.setActivo(UtilBoolean.getOpposite(organizacionExistente.getActivo()));
 
             repository.save(organizacionExistente);
         } else {
-
-            throw new RuntimeException("Organizacion no encontrada con el identificador: " + identificador);
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceOrganizacion.ORGANIZATION_NO_ENCONTRADA_IDENTIFICADOR + identificador);
         }
     }
 
@@ -57,6 +59,12 @@ public final class OrganizacionService {
 
 
     public void eliminar(Organizacion organizacion) {
-        repository.delete(organizacion);
+        Optional<Organizacion> organizacionOptional = repository.findById(organizacion.getIdentificador());
+
+        if (organizacionOptional.isPresent()) {
+            repository.delete(organizacion);
+        } else {
+            throw AuthorizationServiceException.create(UtilMessagesService.ServiceOrganizacion.ORGANIZATION_NO_ENCONTRADA);
+        }
     }
 }
