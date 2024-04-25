@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/authorization")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
