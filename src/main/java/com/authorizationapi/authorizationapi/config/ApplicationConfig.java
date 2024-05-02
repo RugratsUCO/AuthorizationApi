@@ -1,8 +1,7 @@
 package com.authorizationapi.authorizationapi.config;
 
-import com.authorizationapi.authorizationapi.repository.UsuarioRepository;
+import com.authorizationapi.authorizationapi.repository.persona.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

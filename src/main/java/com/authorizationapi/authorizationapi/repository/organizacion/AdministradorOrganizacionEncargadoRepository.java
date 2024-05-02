@@ -1,4 +1,4 @@
-package com.authorizationapi.authorizationapi.repository;
+package com.authorizationapi.authorizationapi.repository.organizacion;
 
 
 import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;

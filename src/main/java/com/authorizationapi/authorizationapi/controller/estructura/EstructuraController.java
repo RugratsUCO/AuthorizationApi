@@ -1,14 +1,13 @@
 package com.authorizationapi.authorizationapi.controller.estructura;
 
-import com.authorizationapi.authorizationapi.config.QueueConfig;
 import com.authorizationapi.authorizationapi.controller.organizacion.AdministradorOrganizacionEncargadoController;
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
-import com.authorizationapi.authorizationapi.service.estructura.EstructuraService;
+import com.authorizationapi.authorizationapi.messages.RabbitMQPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,25 +16,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 @RestController
 @RequestMapping("authorization/api/v1")
 public final class EstructuraController {
+
     @Autowired
-    private final EstructuraService service = new EstructuraService();
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+    RabbitMQPublisher publisher;
     private final Logger log = LoggerFactory.getLogger(AdministradorOrganizacionEncargadoController.class);
 
     @PostMapping("/estructura")
     public ResponseEntity<Response<Estructura>> crearNueva(@RequestBody Estructura estructura) {
 
-
-
         var statusCode = HttpStatus.OK;
         Response<Estructura> response = new Response<>();
 
         try {
-            rabbitTemplate.convertAndSend(QueueConfig.EXCHANGE,"crear_estructura_key", estructura);
+            publisher.crearNueva(estructura);
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_CREADA_FINAL);
 
         } catch (Exception exception) {
@@ -46,17 +43,16 @@ public final class EstructuraController {
         return new ResponseEntity<>(response, statusCode);
     }
     @GetMapping("/estructura")
-    public ResponseEntity<Response<Estructura>> consultar() {
+    public ResponseEntity<Response<Estructura>> consultarPorID(@RequestBody Estructura estructura) {
 
         var statusCode = HttpStatus.OK;
         Response<Estructura> response;
 
         try {
             List<String> messages = new ArrayList<>();
-            //List<Estructura> list = (List<Estructura>) rabbitTemplate.receiveAndConvert("consultar_estructura_queue");
-            List<Estructura> list = service.consultar();
+            Estructura estructuraConsultada = publisher.consultarPorId(estructura);
 
-            if (!list.isEmpty()) {
+            if (estructuraConsultada != null) {
                 messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
 
             } else {
@@ -64,7 +60,7 @@ public final class EstructuraController {
                 messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_FINAL);
             }
 
-            response = new Response<>(list,messages);
+            response = new Response<>(List.of(estructuraConsultada),messages);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -75,14 +71,43 @@ public final class EstructuraController {
 
         return new ResponseEntity<>(response,statusCode);
     }
-    @PutMapping("/estructura/{identificador}")
-    public ResponseEntity<Response<Estructura>> editar(@PathVariable UUID identificador,@RequestBody Estructura estructura) {
+    @GetMapping("/estructuraTodas")
+    public ResponseEntity<Response<Estructura>> consultarTodas() {
+
+        var statusCode = HttpStatus.OK;
+        Response<Estructura> response;
+
+        try {
+            List<String> messages = new ArrayList<>();
+            List<Estructura> estructurasConsultadas = publisher.consultarTodas();
+
+            if (estructurasConsultadas != null || estructurasConsultadas.isEmpty()) {
+                messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
+
+            } else {
+                statusCode = HttpStatus.NOT_FOUND;
+                messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_FINAL);
+            }
+
+            response = new Response<>(estructurasConsultadas,messages);
+
+        }catch (Exception exception) {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            response = new Response<>();
+            response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_INTERNO_FINAL);
+            log.error(exception.getMessage());
+        }
+
+        return new ResponseEntity<>(response,statusCode);
+    }
+    @PutMapping("/estructura")
+    public ResponseEntity<Response<Estructura>> cambiarNombre(@RequestBody Estructura estructura) {
 
         var statusCode = HttpStatus.OK;
         var response = new Response<Estructura>();
 
         try {
-            rabbitTemplate.convertAndSend(QueueConfig.EXCHANGE,"cambiar_nombre_estructura_key", identificador);
+            publisher.cambiarNombre(estructura);
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NOMBRE_EDITADO_FINAL);
 
         }catch (Exception exception) {
@@ -92,14 +117,15 @@ public final class EstructuraController {
 
         return new ResponseEntity<>(response,statusCode);
     }
-
+    /*
     @PatchMapping("/estructura/{identificador}")
-    public ResponseEntity<Response<Estructura>> changeStatus(@PathVariable UUID identificador) {
+    public ResponseEntity<Response<Estructura>> cambiarEstado(@PathVariable String identificador) {
+        UUID identificadorUUID = UtilUUID.generateUUIDFromString(identificador);
         var statusCode = HttpStatus.OK;
         var response = new Response<Estructura>();
 
         try {
-            rabbitTemplate.convertAndSend(QueueConfig.EXCHANGE,"editar_estructura_key", identificador);
+            publisher.cambiarEstado(identificadorUUID);
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ESTADO_EDITADO_FINAL);
 
         }catch (Exception exception) {
@@ -111,6 +137,8 @@ public final class EstructuraController {
         return new ResponseEntity<>(response,statusCode);
     }
 
+     */
+
     @DeleteMapping("/estructura")
     public ResponseEntity<Response<Estructura>> eliminar(@RequestBody Estructura estructura) {
 
@@ -118,7 +146,7 @@ public final class EstructuraController {
         var response = new Response<Estructura>();
 
         try {
-            rabbitTemplate.convertAndSend(QueueConfig.EXCHANGE,"eliminar_estructura_key", estructura);
+            publisher.eliminar(estructura);
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ELIMINADA_FINAL);
 
         }catch (Exception exception) {

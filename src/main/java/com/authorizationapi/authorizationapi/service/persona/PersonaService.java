@@ -5,7 +5,7 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
 import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
-import com.authorizationapi.authorizationapi.repository.PersonaRepository;
+import com.authorizationapi.authorizationapi.repository.persona.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

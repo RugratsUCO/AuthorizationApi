@@ -9,10 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class QueueConfig {
+public class RabbitConfig {
     public static final String EXCHANGE  = "estructura_exchange";
-
-
     @Bean
     public MessageConverter messageConverter(){
         return new Jackson2JsonMessageConverter();
@@ -24,4 +22,5 @@ public class QueueConfig {
         rabbitTemplate.setMessageConverter(messageConverter());
         return rabbitTemplate;
     }
+
 }

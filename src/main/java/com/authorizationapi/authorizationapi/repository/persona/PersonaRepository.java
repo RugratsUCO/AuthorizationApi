@@ -1,4 +1,4 @@
-package com.authorizationapi.authorizationapi.repository;
+package com.authorizationapi.authorizationapi.repository.persona;
 
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import org.springframework.data.jpa.repository.JpaRepository;

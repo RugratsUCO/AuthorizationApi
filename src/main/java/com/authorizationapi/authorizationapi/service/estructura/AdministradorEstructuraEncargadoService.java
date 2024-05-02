@@ -4,7 +4,7 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationServiceException;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesService;
 import com.authorizationapi.authorizationapi.domain.estructura.AdministradorEstructuraEncargado;
-import com.authorizationapi.authorizationapi.repository.AdministradorEstructuraEncargadoRepository;
+import com.authorizationapi.authorizationapi.repository.estructura.AdministradorEstructuraEncargadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
