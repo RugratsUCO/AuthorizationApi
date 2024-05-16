@@ -2,7 +2,6 @@ package com.authorizationapi.authorizationapi.controller.estructura;
 
 import com.authorizationapi.authorizationapi.controller.organizacion.AdministradorOrganizacionEncargadoController;
 import com.authorizationapi.authorizationapi.controller.response.Response;
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
 import com.authorizationapi.authorizationapi.messages.RabbitMQPublisher;
@@ -15,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("authorization/api/v1")
+@CrossOrigin(origins = {"http://localhost:4200"})
 public final class EstructuraController {
 
     @Autowired
@@ -26,13 +25,13 @@ public final class EstructuraController {
     private final Logger log = LoggerFactory.getLogger(AdministradorOrganizacionEncargadoController.class);
 
     @PostMapping("/estructura")
-    public ResponseEntity<Response<Estructura>> crearNueva(@RequestBody Estructura estructura) {
+    public ResponseEntity<Response<Estructura>> crearNueva(@RequestBody List<Estructura> estructuras) {
 
         var statusCode = HttpStatus.OK;
         Response<Estructura> response = new Response<>();
 
         try {
-            publisher.crearNueva(estructura);
+            publisher.crearNueva(estructuras);
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_CREADA_FINAL);
 
         } catch (Exception exception) {

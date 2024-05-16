@@ -4,7 +4,6 @@ import com.authorizationapi.authorizationapi.controller.organizacion.Administrad
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationException;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
-import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.domain.persona.Usuario;
 import com.authorizationapi.authorizationapi.service.jwt.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/authorization")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class AuthController {
     private final AuthService authService;
     private final Logger log = LoggerFactory.getLogger(AdministradorOrganizacionEncargadoController.class);

@@ -14,8 +14,8 @@ import java.util.UUID;
 public class RabbitMQPublisher {
     @Autowired
     private RabbitTemplate rabbitTemplate;
-    public void crearNueva(Estructura estructura){
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"crear_estructura_key",estructura);
+    public void crearNueva(List<Estructura> estructuras){
+        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"crear_estructura_key",estructuras);
     }
     public Estructura consultarPorId(Estructura estructura) {
         return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "consultar_estructura_key", estructura, ParameterizedTypeReference.forType(Estructura.class));
