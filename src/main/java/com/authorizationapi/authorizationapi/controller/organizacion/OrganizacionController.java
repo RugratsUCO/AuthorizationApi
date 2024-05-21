@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.authorizationapi.authorizationapi.auth.AuthAdminService;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
+import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
-import com.authorizationapi.authorizationapi.domain.persona.Persona;
+import com.authorizationapi.authorizationapi.repository.organizacion.AdministradorOrganizacionEncargadoRepository;
 import com.authorizationapi.authorizationapi.service.organizacion.OrganizacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +20,15 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("authorization/api/v1")
+@RequestMapping("api/v1")
 public final class OrganizacionController {
 
     @Autowired
-    private final OrganizacionService service = new OrganizacionService();
+    private OrganizacionService service = new OrganizacionService();
+    @Autowired
+    private AdministradorOrganizacionEncargadoRepository  administradorRepository;
+    @Autowired
+    private AuthAdminService authService;
     private final Logger log = LoggerFactory.getLogger(OrganizacionController.class);
 
     @PostMapping("/organizacion")
@@ -43,15 +49,19 @@ public final class OrganizacionController {
         }
         return new ResponseEntity<>(response, statusCode);
     }
-    @GetMapping("/organizacion")
-    public ResponseEntity<Response<Organizacion>> consultar() {
-
+    @GetMapping("/organizacion/{identificadorAdministrador}")
+    public ResponseEntity<Response<Organizacion>> consultar(@PathVariable UUID identificadorAdministrador,@RequestBody Organizacion organizacion) {
+        AdministradorOrganizacionEncargado administrador = administradorRepository.findById(identificadorAdministrador).orElse(null);
         var statusCode = HttpStatus.OK;
         Response<Organizacion> response;
 
         try {
             List<String> messages = new ArrayList<>();
-            List<Organizacion> list = service.consultar();
+            List<Organizacion> list = new ArrayList<>();
+            assert administrador != null;
+            if(authService.tienePermisosEnOrganizacion(administrador.getPersona().getUsuario(),administrador.getOrganizacion(),organizacion.getIdentificador())){
+               list = service.consultar();
+            }
 
             if (!list.isEmpty()) {
                 messages.add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_CONSULDATAS_FINAL);

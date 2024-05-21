@@ -26,10 +26,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authRequest ->
                         authRequest
-                                .requestMatchers(HttpMethod.GET).permitAll()
-                                .requestMatchers(HttpMethod.POST).permitAll()
-                                .requestMatchers("/authorization/**").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/authorization/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/api/v1/organizacion/**").permitAll()
+                                .requestMatchers("/api/v1/estructura/**").hasRole("ADMINISTRADOR_ESTRUCTURA")
+                                .requestMatchers("/api/v1/organizacion/**").hasRole("ADMINISTRADOR_ORGANIZACION")
                                 .anyRequest().authenticated()
+
                 )
                 .sessionManagement(sessionManager->
                         sessionManager

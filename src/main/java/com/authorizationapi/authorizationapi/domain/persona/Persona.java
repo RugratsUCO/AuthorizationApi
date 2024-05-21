@@ -46,8 +46,12 @@ public final class Persona {
 	@Column(name = "activo")
 	private boolean activo;
 
+	@ManyToOne
+	@JoinColumn(name = "usuario")
+	private Usuario usuario;
 	public Persona() {
 		super();
+		this.usuario = new Usuario();
 		setIdentificador(UtilUUID.getDefaultValue());
 		setTipoIdentificacion(UtilText.getDefaultValue());
 		setNumeroIdentificacion(UtilText.getDefaultNumeric());
@@ -64,8 +68,9 @@ public final class Persona {
 	public Persona(UUID identificador, String tipoIdentificacion,
 				   String numeroIdentificacion, String primerNombre, String segundoNombre,
 				   String primerApellido, String segundoApellido, String correo,
-				   String paisTelefono, String numeroTelefono, boolean estaActivo) {
+				   String paisTelefono, String numeroTelefono, boolean estaActivo, Usuario usuario) {
 		super();
+		this.usuario = usuario;
 		setIdentificador(identificador);
 		setTipoIdentificacion(tipoIdentificacion);
 		setNumeroIdentificacion(numeroIdentificacion);
@@ -138,6 +143,10 @@ public final class Persona {
 		this.activo = UtilObject.getDefault(activo, UtilBoolean.getDefaultValue());
 		return this;
 	}
+	public Persona setUsuario(final Usuario usuario) {
+		this.usuario = UtilObject.getDefault(usuario, new Usuario());
+		return this;
+	}
 
 	public UUID getIdentificador() {
 		return identificador;
@@ -181,6 +190,9 @@ public final class Persona {
 
 	public boolean getActivo() {
 		return activo;
+	}
+	public Usuario getUsuario() {
+		return usuario;
 	}
 
 	public static Persona create() {
