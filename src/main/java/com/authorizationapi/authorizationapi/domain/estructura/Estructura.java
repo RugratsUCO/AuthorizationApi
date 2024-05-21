@@ -7,6 +7,8 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.util.UUID;
 @Entity
@@ -40,15 +42,21 @@ public final class Estructura {
 			Organizacion.create(), null, UtilText.getDefaultValue(), UtilBoolean.getDefaultValue(),
 			UtilBoolean.getDefaultValue());
 
-	public Estructura(final UUID identificador, final Organizacion organizacion,
-					  final Estructura estructuraPadre, final String nombre, final boolean estaActivo,
-					  boolean tienePadre) {
-		super();
+	@JsonCreator
+	public Estructura(
+			@JsonProperty("identificador") UUID identificador,
+			@JsonProperty("organizacion") Organizacion organizacion,
+			@JsonProperty("estructuraPadre") Estructura estructuraPadre,
+			@JsonProperty("nombre") String nombre,
+			@JsonProperty("activo") boolean activo,
+			@JsonProperty("tienePadre") boolean tienePadre) {
+
 		setIdentificador(identificador);
 		setOrganizacion(organizacion);
+		setTienePadre(tienePadre);
 		setEstructuraPadre(estructuraPadre);
 		setNombre(nombre);
-		setActivo(estaActivo);
+		setActivo(activo);
 		setTienePadre(tienePadre);
 	}
 
@@ -56,10 +64,10 @@ public final class Estructura {
 		super();
 		setIdentificador(UtilUUID.getDefaultValue());
 		setOrganizacion(Organizacion.create());
+		setTienePadre(UtilBoolean.getDefaultValue());
 		setEstructuraPadre(PADRE);
 		setNombre(UtilText.getDefaultValue());
 		setActivo(UtilBoolean.getDefaultValue());
-		setTienePadre(UtilBoolean.getDefaultValue());
 	}
 
 	public final boolean isTienePadre() {
@@ -67,7 +75,7 @@ public final class Estructura {
 	}
 
 	public Estructura setTienePadre(boolean tienePadre) {
-		this.tienePadre = UtilBoolean.getDefault(tienePadre);
+		this.tienePadre = UtilBoolean.isNull(tienePadre);
 		return this;
 	}
 
@@ -83,9 +91,11 @@ public final class Estructura {
 
 	public Estructura setEstructuraPadre(final Estructura estructuraPadre) {
 		if (isTienePadre()) {
+			System.out.println("estructuraPadre.getIdentificador() = " + estructuraPadre.getIdentificador());
 			this.estructuraPadre = UtilObject.getDefault(estructuraPadre, Estructura.create());
+			return this;
 		} else {
-			this.estructuraPadre = PADRE;
+			this.estructuraPadre = null;
 		}
 		return this;
 	}

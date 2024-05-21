@@ -2,6 +2,7 @@ package com.authorizationapi.authorizationapi.controller.estructura;
 
 import com.authorizationapi.authorizationapi.controller.organizacion.AdministradorOrganizacionEncargadoController;
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
 import com.authorizationapi.authorizationapi.messages.RabbitMQPublisher;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("authorization/api/v1")
@@ -116,7 +118,7 @@ public final class EstructuraController {
 
         return new ResponseEntity<>(response,statusCode);
     }
-    /*
+
     @PatchMapping("/estructura/{identificador}")
     public ResponseEntity<Response<Estructura>> cambiarEstado(@PathVariable String identificador) {
         UUID identificadorUUID = UtilUUID.generateUUIDFromString(identificador);
@@ -135,8 +137,6 @@ public final class EstructuraController {
 
         return new ResponseEntity<>(response,statusCode);
     }
-
-     */
 
     @DeleteMapping("/estructura")
     public ResponseEntity<Response<Estructura>> eliminar(@RequestBody Estructura estructura) {

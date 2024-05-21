@@ -26,11 +26,11 @@ public class RabbitMQPublisher {
     public void cambiarNombre(Estructura estructura){
         rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"cambiar_nombre_key",estructura);
     }
-    /*
+
     public void cambiarEstado(UUID identificador){
         rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"cambiar_estado_key",identificador);
     }
-     */
+
     public void eliminar(Estructura estructura){
         rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"eliminar_estructura_key",estructura);
     }
