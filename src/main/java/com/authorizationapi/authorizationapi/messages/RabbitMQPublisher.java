@@ -2,9 +2,11 @@ package com.authorizationapi.authorizationapi.messages;
 
 import com.authorizationapi.authorizationapi.config.RabbitConfig;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
+import com.authorizationapi.authorizationapi.dto.EstructuraDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,25 +16,25 @@ import java.util.UUID;
 public class RabbitMQPublisher {
     @Autowired
     private RabbitTemplate rabbitTemplate;
-    public void crearNueva(List<Estructura> estructuras){
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"crear_estructura_key",estructuras);
+    public HttpStatus crearNueva(List<Estructura> estructuras){
+        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "crear_estructura_key", estructuras, ParameterizedTypeReference.forType(HttpStatus.class));
     }
-    public Estructura consultarPorId(Estructura estructura) {
-        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "consultar_estructura_key", estructura, ParameterizedTypeReference.forType(Estructura.class));
+    public EstructuraDTO consultarPorId(Estructura estructura) {
+        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "consultar_estructura_key", estructura, ParameterizedTypeReference.forType(EstructuraDTO.class));
     }
     public List<Estructura> consultarTodas() {
         return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "consultar_estructuras_key", Estructura.create(), ParameterizedTypeReference.forType(List.class));
     }
-    public void cambiarNombre(Estructura estructura){
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"cambiar_nombre_key",estructura);
+    public HttpStatus cambiarNombre(Estructura estructura){
+        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "cambiar_nombre_key", estructura, ParameterizedTypeReference.forType(HttpStatus.class));
     }
 
-    public void cambiarEstado(UUID identificador){
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"cambiar_estado_key",identificador);
+    public HttpStatus cambiarEstado(UUID identificador){
+        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "cambiar_estado_key", identificador, ParameterizedTypeReference.forType(HttpStatus.class));
     }
 
-    public void eliminar(Estructura estructura){
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,"eliminar_estructura_key",estructura);
+    public HttpStatus eliminar(Estructura estructura){
+        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "eliminar_estructura_key", estructura, ParameterizedTypeReference.forType(HttpStatus.class));
     }
 
 }

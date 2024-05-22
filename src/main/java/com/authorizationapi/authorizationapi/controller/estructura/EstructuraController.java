@@ -1,10 +1,10 @@
 package com.authorizationapi.authorizationapi.controller.estructura;
 
-import com.authorizationapi.authorizationapi.controller.organizacion.AdministradorOrganizacionEncargadoController;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
+import com.authorizationapi.authorizationapi.dto.EstructuraDTO;
 import com.authorizationapi.authorizationapi.messages.RabbitMQPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +24,22 @@ public final class EstructuraController {
 
     @Autowired
     RabbitMQPublisher publisher;
-    private final Logger log = LoggerFactory.getLogger(AdministradorOrganizacionEncargadoController.class);
+    private final Logger log = LoggerFactory.getLogger(EstructuraController.class);
 
     @PostMapping("/estructura")
     public ResponseEntity<Response<Estructura>> crearNueva(@RequestBody List<Estructura> estructuras) {
 
         var statusCode = HttpStatus.OK;
+        var estadoEstructura = HttpStatus.ACCEPTED;
         Response<Estructura> response = new Response<>();
 
         try {
-            publisher.crearNueva(estructuras);
-            response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_CREADA_FINAL);
+            estadoEstructura = publisher.crearNueva(estructuras);
+            if (estadoEstructura == HttpStatus.ACCEPTED){
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_CREADA_FINAL);
+            }else {
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NO_CREADA_FINAL);
+            }
 
         } catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -51,9 +56,9 @@ public final class EstructuraController {
 
         try {
             List<String> messages = new ArrayList<>();
-            Estructura estructuraConsultada = publisher.consultarPorId(estructura);
+            EstructuraDTO estructuraConsultada = publisher.consultarPorId(estructura);
 
-            if (estructuraConsultada != null) {
+            if (estructuraConsultada.getEstado() == HttpStatus.ACCEPTED) {
                 messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
 
             } else {
@@ -61,7 +66,7 @@ public final class EstructuraController {
                 messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_FINAL);
             }
 
-            response = new Response<>(List.of(estructuraConsultada),messages);
+            response = new Response<>(List.of(estructuraConsultada.getEstructura()),messages);
 
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -82,7 +87,7 @@ public final class EstructuraController {
             List<String> messages = new ArrayList<>();
             List<Estructura> estructurasConsultadas = publisher.consultarTodas();
 
-            if (estructurasConsultadas != null || estructurasConsultadas.isEmpty()) {
+            if (estructurasConsultadas != null || !estructurasConsultadas.isEmpty()) {
                 messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
 
             } else {
@@ -108,9 +113,12 @@ public final class EstructuraController {
         var response = new Response<Estructura>();
 
         try {
-            publisher.cambiarNombre(estructura);
-            response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NOMBRE_EDITADO_FINAL);
-
+            HttpStatus estadoTransaccion = publisher.cambiarNombre(estructura);
+            if(estadoTransaccion == HttpStatus.ACCEPTED){
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NOMBRE_EDITADO_FINAL);
+            }else{
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NOMBRE_NO_EDITADO_FINAL);
+            }
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NOMBRE_NO_EDITADO_FINAL);
@@ -126,9 +134,12 @@ public final class EstructuraController {
         var response = new Response<Estructura>();
 
         try {
-            publisher.cambiarEstado(identificadorUUID);
-            response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ESTADO_EDITADO_FINAL);
-
+            HttpStatus estadoTransaccion = publisher.cambiarEstado(identificadorUUID);
+            if (estadoTransaccion == HttpStatus.ACCEPTED){
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ESTADO_EDITADO_FINAL);
+            }else{
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ESTADO_NO_EDITADO_FINAL);
+            }
         }catch (Exception exception) {
             log.error(exception.getMessage());
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -145,9 +156,12 @@ public final class EstructuraController {
         var response = new Response<Estructura>();
 
         try {
-            publisher.eliminar(estructura);
-            response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ELIMINADA_FINAL);
-
+            HttpStatus estadoTransaccion = publisher.eliminar(estructura);
+            if(estadoTransaccion == HttpStatus.ACCEPTED){
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ELIMINADA_FINAL);
+            }else{
+                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NO_ELIMINADA_FINAL);
+            }
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NO_ELIMINADA_FINAL);
