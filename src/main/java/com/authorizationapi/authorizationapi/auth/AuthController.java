@@ -22,13 +22,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/authorization")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:4200"})
 public class AuthController {
     private final AuthService authService;
     private final Logger log = LoggerFactory.getLogger(AdministradorOrganizacionEncargadoController.class);
     @Autowired
     private AuthenticationManager authenticationManager;
-
 
     @PostMapping(value = "login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request){
@@ -54,20 +52,16 @@ public class AuthController {
         }
         return ResponseEntity.ok(usuario);
     }
+
     @GetMapping("/personaById")
     public ResponseEntity<Response<Usuario>> listById(@RequestBody Usuario persona) {
-
         var statusCode = HttpStatus.OK;
         Response<Usuario> response = new Response<>();
-
         try {
             List<String> messages = new ArrayList<>();
             Usuario personaConsultada = authService.consultar(persona);
-
             List<Usuario> list = List.of(personaConsultada);
-
             response = new Response<>(list,messages);
-
         } catch (AuthorizationException exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response.getMessages().add(UtilMessagesController.ControllerPersona.PERSONA_NO_CONSULTADA_INTERNO_FINAL);
@@ -77,7 +71,6 @@ public class AuthController {
             response.getMessages().add(exception.getMessage());
             log.error(UtilMessagesController.ControllerPersona.PERSONAS_NO_CONSULTADAS_TECNICO);
         }
-
         return new ResponseEntity<>(response,statusCode);
     }
 }
