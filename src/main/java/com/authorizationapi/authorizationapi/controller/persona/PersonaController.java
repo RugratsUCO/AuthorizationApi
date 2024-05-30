@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.authorizationapi.authorizationapi.controller.response.Response;
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.crosscutting.utils.exception.AuthorizationException;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.service.persona.PersonaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("authorization/api/v1")
 public final class PersonaController {
 
-	@Autowired
-	private final PersonaService service = new PersonaService();
+	private final PersonaService service;
 
 	private final Logger log = LoggerFactory.getLogger(PersonaController.class);
 
+	public PersonaController(PersonaService service){
+		this.service = service;
+	}
 	@PostMapping("/persona")
 	public ResponseEntity<Response<Persona>> create(@RequestBody Persona persona) {
 
@@ -89,7 +89,7 @@ public final class PersonaController {
 		var statusCode = HttpStatus.OK;
 		Response<Persona> response;
 
-		List<String> messages = null;
+		List<String> messages;
 		try {
 			messages = new ArrayList<>();
 			List<Persona> list = service.consultarTodas();

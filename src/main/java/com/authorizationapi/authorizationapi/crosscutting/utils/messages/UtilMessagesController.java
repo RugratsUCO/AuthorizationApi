@@ -59,11 +59,12 @@ public class UtilMessagesController {
         public static final String ADMINISTRADOR_ESTRUCTURA_ENCARGADO_NO_ELIMINADO_FINAL = "No se ha podido eliminar al administrador de la organizacion";
     }
 
-    public static final class ControllerEstructura{
+    public static final class ControllerEstructura {
         public static final String ESTRUCTURA_CREADA_FINAL = "La estructura se ha registrado exitosamente";
         public static final String ESTRUCTURA_NO_CREADA_FINAL = "No se ha podido registrar la estructura";
         public static final String ESTRUCTURAS_CONSULTADA_FINAL = "Estructuras consultadas exitosamente";
         public static final String ESTRUCTURAS_NO_CONSULTADAS_FINAL = "No hay estructuras para consultar";
+        public static final String ESTRUCTURAS_NO_AUTORIZADO_CONSULTAR_FINAL = "No se puede consultar, dado que no estás autorizado";
         public static final String ESTRUCTURAS_NO_CONSULTADAS_INTERNO_FINAL = "Error interno, no se ha podido realizar la consulta correctamente";
         public static final String ESTRUCTURA_ESTADO_EDITADO_FINAL = "Se ha cambiado el estado de la estructura satisfactoriamente";
         public static final String ESTRUCTURA_ESTADO_NO_EDITADO_FINAL = "No se ha podido cambiar el estado";

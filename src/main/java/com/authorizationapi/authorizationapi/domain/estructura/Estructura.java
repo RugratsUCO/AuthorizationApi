@@ -91,7 +91,6 @@ public final class Estructura {
 
 	public Estructura setEstructuraPadre(final Estructura estructuraPadre) {
 		if (isTienePadre()) {
-			System.out.println("estructuraPadre.getIdentificador() = " + estructuraPadre.getIdentificador());
 			this.estructuraPadre = UtilObject.getDefault(estructuraPadre, Estructura.create());
 			return this;
 		} else {
@@ -105,8 +104,8 @@ public final class Estructura {
 		return this;
 	}
 
-	public Estructura setActivo(final boolean estaActivo) {
-		this.activo = UtilObject.getDefault(estaActivo, UtilBoolean.getDefaultValue());
+	public Estructura setActivo(final boolean activo) {
+		this.activo = UtilObject.getDefault(activo, UtilBoolean.getDefaultValue());
 		return this;
 	}
 

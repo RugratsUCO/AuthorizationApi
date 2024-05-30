@@ -1,9 +1,11 @@
 package com.authorizationapi.authorizationapi.controller.estructura;
 
+import com.authorizationapi.authorizationapi.auth.AuthAdminService;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
+import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.dto.EstructuraDTO;
 import com.authorizationapi.authorizationapi.messages.RabbitMQPublisher;
 import org.slf4j.Logger;
@@ -22,50 +24,70 @@ import java.util.UUID;
 @CrossOrigin(origins = {"http://localhost:4200"})
 public final class EstructuraController {
 
-    @Autowired
-    RabbitMQPublisher publisher;
+    private final RabbitMQPublisher publisher;
+    private final AuthAdminService authService;
     private final Logger log = LoggerFactory.getLogger(EstructuraController.class);
 
-    @PostMapping("/estructura")
-    public ResponseEntity<Response<Estructura>> crearNueva(@RequestBody List<Estructura> estructuras) {
+    @Autowired
+    public EstructuraController(AuthAdminService authService, RabbitMQPublisher publisher) {
+        this.authService = authService;
+        this.publisher = publisher;
+    }
+    @PostMapping("/estructura/{correo}")
+    public ResponseEntity<Response<Estructura>> crearNueva(@RequestBody List<Estructura> estructuras, @PathVariable String correo) {
 
-        var statusCode = HttpStatus.OK;
-        var estadoEstructura = HttpStatus.ACCEPTED;
-        Response<Estructura> response = new Response<>();
+       var estadoCreacion = HttpStatus.OK;
+       Response<Estructura> response = new Response<>();
 
         try {
-            estadoEstructura = publisher.crearNueva(estructuras);
-            if (estadoEstructura == HttpStatus.ACCEPTED){
-                response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_CREADA_FINAL);
-            }else {
+            AdministradorOrganizacionEncargado administrador = authService.traerAdministradorOrganizacionDeCorreo(correo);
+
+            if(administrador != null && administrador.isActivo()){
+                for (Estructura estructura : estructuras){
+                    estructura.setOrganizacion(administrador.getOrganizacion());
+                }
+                estadoCreacion = publisher.crearNueva(estructuras);
+                if(estadoCreacion == HttpStatus.OK){
+                    response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_CREADA_FINAL);
+                }
+            }
+            else {
                 response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NO_CREADA_FINAL);
             }
 
         } catch (Exception exception) {
-            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            estadoCreacion = HttpStatus.INTERNAL_SERVER_ERROR;
             response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NO_CREADA_FINAL);
             log.error(exception.getMessage());
         }
-        return new ResponseEntity<>(response, statusCode);
+        return new ResponseEntity<>(response, estadoCreacion);
     }
-    @GetMapping("/estructura")
-    public ResponseEntity<Response<Estructura>> consultarPorID(@RequestBody Estructura estructura) {
+    @GetMapping("/estructura/{correo}")
+    public ResponseEntity<Response<Estructura>> consultarPorID(@RequestBody Estructura estructura, @PathVariable String correo) {
 
         var statusCode = HttpStatus.OK;
         Response<Estructura> response;
 
         try {
+            AdministradorOrganizacionEncargado administrador = authService.traerAdministradorOrganizacionDeCorreo(correo);
+
             List<String> messages = new ArrayList<>();
-            EstructuraDTO estructuraConsultada = publisher.consultarPorId(estructura);
+            EstructuraDTO estructuraConsultada = new EstructuraDTO();
+            if(administrador != null && administrador.isActivo()) {
 
-            if (estructuraConsultada.getEstado() == HttpStatus.ACCEPTED) {
-                messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
+                if (authService.tienePermisosEnEstructura(administrador, estructura)) {
+                    estructuraConsultada = publisher.consultarPorId(estructura);
+                }
+                if (estructuraConsultada.getEstado() == HttpStatus.OK) {
+                    messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
 
-            } else {
-                statusCode = HttpStatus.NOT_FOUND;
-                messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_FINAL);
+                } else if (estructuraConsultada.getEstado() == HttpStatus.FORBIDDEN) {
+                    messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_AUTORIZADO_CONSULTAR_FINAL);
+                } else {
+                    statusCode = HttpStatus.NOT_FOUND;
+                    messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_FINAL);
+                }
             }
-
             response = new Response<>(List.of(estructuraConsultada.getEstructura()),messages);
 
         }catch (Exception exception) {
@@ -87,7 +109,41 @@ public final class EstructuraController {
             List<String> messages = new ArrayList<>();
             List<Estructura> estructurasConsultadas = publisher.consultarTodas();
 
-            if (estructurasConsultadas != null || !estructurasConsultadas.isEmpty()) {
+            if (estructurasConsultadas != null && !estructurasConsultadas.isEmpty()) {
+                messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
+
+            } else {
+                statusCode = HttpStatus.NOT_FOUND;
+                messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_FINAL);
+            }
+
+            response = new Response<>(estructurasConsultadas,messages);
+
+        }catch (Exception exception) {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            response = new Response<>();
+            response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_NO_CONSULTADAS_INTERNO_FINAL);
+            log.error(exception.getMessage());
+        }
+
+        return new ResponseEntity<>(response,statusCode);
+    }
+    @GetMapping("/estructuraOrganizacion/{correo}")
+    public ResponseEntity<Response<Estructura>> consultarPorOrganizacion(@PathVariable String correo) {
+
+        var statusCode = HttpStatus.OK;
+        Response<Estructura> response;
+
+        try {
+            AdministradorOrganizacionEncargado administrador = authService.traerAdministradorOrganizacionDeCorreo(correo);
+            List<String> messages = new ArrayList<>();
+            List<Estructura> estructurasConsultadas = new ArrayList<>();
+
+            if(administrador != null && authService.tienePermisosEnOrganizacion(administrador) && administrador.isActivo()){
+                estructurasConsultadas = publisher.consultarPorOrganizacion(administrador.getOrganizacion());
+            }
+
+            if (estructurasConsultadas != null && !estructurasConsultadas.isEmpty()) {
                 messages.add(UtilMessagesController.ControllerEstructura.ESTRUCTURAS_CONSULTADA_FINAL);
 
             } else {
@@ -114,7 +170,7 @@ public final class EstructuraController {
 
         try {
             HttpStatus estadoTransaccion = publisher.cambiarNombre(estructura);
-            if(estadoTransaccion == HttpStatus.ACCEPTED){
+            if(estadoTransaccion == HttpStatus.OK){
                 response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NOMBRE_EDITADO_FINAL);
             }else{
                 response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NOMBRE_NO_EDITADO_FINAL);
@@ -135,7 +191,7 @@ public final class EstructuraController {
 
         try {
             HttpStatus estadoTransaccion = publisher.cambiarEstado(identificadorUUID);
-            if (estadoTransaccion == HttpStatus.ACCEPTED){
+            if (estadoTransaccion == HttpStatus.OK){
                 response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ESTADO_EDITADO_FINAL);
             }else{
                 response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ESTADO_NO_EDITADO_FINAL);
@@ -157,7 +213,7 @@ public final class EstructuraController {
 
         try {
             HttpStatus estadoTransaccion = publisher.eliminar(estructura);
-            if(estadoTransaccion == HttpStatus.ACCEPTED){
+            if(estadoTransaccion == HttpStatus.OK){
                 response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_ELIMINADA_FINAL);
             }else{
                 response.getMessages().add(UtilMessagesController.ControllerEstructura.ESTRUCTURA_NO_ELIMINADA_FINAL);

@@ -9,31 +9,28 @@ import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
-import com.authorizationapi.authorizationapi.repository.organizacion.AdministradorOrganizacionEncargadoRepository;
 import com.authorizationapi.authorizationapi.service.organizacion.OrganizacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("authorization/api/v1")
 public final class OrganizacionController {
 
-    @Autowired
-    private OrganizacionService service = new OrganizacionService();
-    @Autowired
-    private AdministradorOrganizacionEncargadoRepository  administradorRepository;
-    @Autowired
-    private AuthAdminService authService;
+    private final OrganizacionService service;
+    private final AuthAdminService authService;
     private final Logger log = LoggerFactory.getLogger(OrganizacionController.class);
+    public OrganizacionController(OrganizacionService service, AuthAdminService authService){
+        this.authService = authService;
+        this.service = service;
+    }
 
     @PostMapping("/organizacion")
     public ResponseEntity<Response<Organizacion>> crearNueva(@RequestBody Organizacion organizacion) {
-
 
         var statusCode = HttpStatus.OK;
         Response<Organizacion> response = new Response<>();
@@ -49,33 +46,30 @@ public final class OrganizacionController {
         }
         return new ResponseEntity<>(response, statusCode);
     }
-    @GetMapping("/organizacion/{identificadorAdministrador}")
-    public ResponseEntity<Response<Organizacion>> consultar(@PathVariable UUID identificadorAdministrador,@RequestBody Organizacion organizacion) {
-        AdministradorOrganizacionEncargado administrador = administradorRepository.findById(identificadorAdministrador).orElse(null);
+    @GetMapping("/organizacion/{correo}")
+    public ResponseEntity<Response<Organizacion>> consultar(@PathVariable String correo) {
+        AdministradorOrganizacionEncargado administrador = authService.traerAdministradorOrganizacionDeCorreo(correo);
         var statusCode = HttpStatus.OK;
-        Response<Organizacion> response;
+        var response = new Response<Organizacion>();
 
         try {
             List<String> messages = new ArrayList<>();
-            List<Organizacion> list = new ArrayList<>();
+            Organizacion organizacion;
             assert administrador != null;
-            if(authService.tienePermisosEnOrganizacion(administrador.getPersona().getUsuario(),administrador.getOrganizacion(),organizacion.getIdentificador())){
-               list = service.consultar();
-            }
 
-            if (!list.isEmpty()) {
-                messages.add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_CONSULDATAS_FINAL);
-
+            if(authService.tienePermisosEnOrganizacion(administrador)){
+               organizacion = service.consultarPorId(administrador.getOrganizacion());
+                if (organizacion != null) {
+                    messages.add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_CONSULDATAS_FINAL);
+                    response = new Response<>(List.of(organizacion), messages);
+                }
             } else {
                 statusCode = HttpStatus.NOT_FOUND;
                 messages.add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_NO_CONSULTADAS_FINAL);
             }
 
-            response = new Response<>(list,messages);
-
         }catch (Exception exception) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response = new Response<>();
             response.getMessages().add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_NO_CONSULTADAS_INTERNO_FINAL);
         }
 

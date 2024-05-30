@@ -27,11 +27,11 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request, Rol rol) {
         Usuario usuario = Usuario.builder()
                 .username(request.getCorreo())
                 .password(passwordEncoder.encode(request.getContrasena()))
-                .rol(Rol.ADMINISTRADOR_ORGANIZACION)
+                .rol(rol)
                 .primerNombre(request.getPrimerNombre())
                 .segundoNombre(request.getSegundoNombre())
                 .primerApellido(request.getPrimerApellido())

@@ -56,6 +56,9 @@ public final class OrganizacionService {
     public List<Organizacion> consultar() {
         return repository.findAll();
     }
+    public Organizacion consultarPorId(Organizacion organizacion) {
+        return repository.findById(organizacion.getIdentificador()).orElse(null);
+    }
 
 
     public void eliminar(Organizacion organizacion) {

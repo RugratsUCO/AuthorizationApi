@@ -8,7 +8,6 @@ import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Participante;
 import com.authorizationapi.authorizationapi.service.estructura.ParticipanteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("authorization/api/v1")
 public final class ParticipanteController {
 
-	@Autowired
-	private final ParticipanteService service = new ParticipanteService();
+	private final ParticipanteService service;
+	public ParticipanteController(ParticipanteService service) {
+		this.service = service;
+	}
 	@PostMapping("/participante")
 	public ResponseEntity<Response<Participante>> registrar(@RequestBody Participante participante) {
 

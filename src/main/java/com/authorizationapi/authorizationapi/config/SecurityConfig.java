@@ -27,11 +27,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 .requestMatchers(HttpMethod.POST,"/authorization/**").permitAll()
-                                .requestMatchers(HttpMethod.GET,"/api/v1/organizacion/**").permitAll()
-                                .requestMatchers("/api/v1/estructura/**").hasRole("ADMINISTRADOR_ESTRUCTURA")
-                                .requestMatchers("/api/v1/organizacion/**").hasRole("ADMINISTRADOR_ORGANIZACION")
                                 .anyRequest().authenticated()
-
                 )
                 .sessionManagement(sessionManager->
                         sessionManager

@@ -28,11 +28,7 @@ public final class PersonaService {
 
         if (personaOptional.isPresent()) {
             Persona personaExistente = personaOptional.get();
-            personaExistente.setCorreo(nuevaPersona.getCorreo()).setActivo(nuevaPersona.getActivo())
-                    .setPrimerNombre(nuevaPersona.getPrimerNombre()).setSegundoNombre(nuevaPersona.getSegundoNombre())
-                    .setPrimerApellido(nuevaPersona.getPrimerApellido()).setSegundoApellido(nuevaPersona.getSegundoApellido())
-                    .setNumeroIdentificacion(nuevaPersona.getNumeroIdentificacion()).setTipoIdentificacion(nuevaPersona.getTipoIdentificacion())
-                    .setNumeroTelefono(nuevaPersona.getNumeroTelefono()).setPaisTelefono(nuevaPersona.getPaisTelefono());
+            personaExistente.setUsuario(nuevaPersona.getUsuario());
 
             repository.save(personaExistente);
         } else {

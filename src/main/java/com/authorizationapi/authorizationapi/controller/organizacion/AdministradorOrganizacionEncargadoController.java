@@ -6,7 +6,6 @@ import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOr
 import com.authorizationapi.authorizationapi.service.organizacion.AdministradorOrganizacionEncargadoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +18,12 @@ import java.util.UUID;
 @RequestMapping("authorization/api/v1")
 public final class AdministradorOrganizacionEncargadoController {
 
-    @Autowired
-    private final AdministradorOrganizacionEncargadoService service = new AdministradorOrganizacionEncargadoService();
+    private final AdministradorOrganizacionEncargadoService service;
 
     private final Logger log = LoggerFactory.getLogger(AdministradorOrganizacionEncargadoController.class);
-
+    public AdministradorOrganizacionEncargadoController(AdministradorOrganizacionEncargadoService service){
+        this.service = service;
+    }
 
     @PostMapping("/administradororganizacion")
     public ResponseEntity<Response<AdministradorOrganizacionEncargado>> concederPermisos(@RequestBody AdministradorOrganizacionEncargado administrador) {
@@ -73,7 +73,7 @@ public final class AdministradorOrganizacionEncargadoController {
         return new ResponseEntity<>(response,statusCode);
     }
     @PutMapping("/administradororganizacion/{identificador}")
-    public ResponseEntity<Response<AdministradorOrganizacionEncargado>> cambiarEstado(@PathVariable UUID identificador, @RequestBody AdministradorOrganizacionEncargado administrador) {
+    public ResponseEntity<Response<AdministradorOrganizacionEncargado>> cambiarEstado(@PathVariable UUID identificador) {
 
         var statusCode = HttpStatus.OK;
         var response = new Response<AdministradorOrganizacionEncargado>();

@@ -1,44 +1,46 @@
 package com.authorizationapi.authorizationapi.auth;
 
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
+import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
+import com.authorizationapi.authorizationapi.domain.persona.Persona;
 import com.authorizationapi.authorizationapi.domain.persona.Rol;
 import com.authorizationapi.authorizationapi.domain.persona.Usuario;
-import com.authorizationapi.authorizationapi.messages.RabbitMQPublisher;
+import com.authorizationapi.authorizationapi.repository.organizacion.AdministradorOrganizacionEncargadoRepository;
 import com.authorizationapi.authorizationapi.repository.organizacion.OrganizacionRepository;
+import com.authorizationapi.authorizationapi.repository.persona.PersonaRepository;
 import com.authorizationapi.authorizationapi.repository.persona.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class AuthAdminService {
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private OrganizacionRepository organizacionRepository;
-    @Autowired
-    RabbitMQPublisher publisherEstructura;
+    private final AdministradorOrganizacionEncargadoRepository adminOrganizacionRepository;
+    private final OrganizacionRepository organizacionRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PersonaRepository personaRepository;
 
+    public AuthAdminService(AdministradorOrganizacionEncargadoRepository adminOrganizacionRepository,OrganizacionRepository organizacionRepository,UsuarioRepository usuarioRepository,PersonaRepository personaRepository) {
+        this.adminOrganizacionRepository = adminOrganizacionRepository;
+        this.organizacionRepository = organizacionRepository;
+        this.personaRepository = personaRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
 
-    public boolean tienePermisosEnEstructura(Usuario usuario, Estructura estructura, UUID identificadorEstructura) {
-        if (usuario.getRol() == Rol.ADMINISTRADOR_ESTRUCTURA) {
-            return estructuraEsAdministradaPorUsuario(estructura,identificadorEstructura);
+    public boolean tienePermisosEnEstructura(AdministradorOrganizacionEncargado administrador,Estructura estructura ) {
+        return administrador.getPersona().getUsuario().getRol() == Rol.ADMINISTRADOR_ORGANIZACION && administrador.getOrganizacion().getIdentificador().equals(estructura.getOrganizacion().getIdentificador());
+    }
+    public boolean tienePermisosEnOrganizacion(AdministradorOrganizacionEncargado administrador) {
+        if (administrador.getPersona().getUsuario().getRol() == Rol.ADMINISTRADOR_ORGANIZACION) {
+            return organizacionRepository.findById(administrador.getOrganizacion().getIdentificador()).orElse(Organizacion.create()).getIdentificador().equals(administrador.getOrganizacion().getIdentificador());
         }
         return false;
     }
-    public boolean tienePermisosEnOrganizacion(Usuario usuario, Organizacion organizacion, UUID identificadorOrganizacion) {
-        if (usuario.getRol() == Rol.ADMINISTRADOR_ORGANIZACION) {
-            return organizacionEsAdministradaPorUsuario(organizacion,identificadorOrganizacion);
-        }
-        return false;
+    public AdministradorOrganizacionEncargado traerAdministradorOrganizacionDeCorreo(String correo){
+        Usuario usuario = usuarioRepository.findByUsername(correo).orElseThrow();
+        Persona persona = personaRepository.findByUsuario(usuario);
+        return adminOrganizacionRepository.findByPersona(persona);
+
     }
-    private boolean estructuraEsAdministradaPorUsuario(Estructura estructura, UUID identificadorEstructura) {
-        return publisherEstructura.consultarPorId(estructura).equals(identificadorEstructura);
-    }
-    private boolean organizacionEsAdministradaPorUsuario(Organizacion organizacion, UUID identificadorOrganizacion) {
-        return organizacionRepository.findById(organizacion.getIdentificador()).orElse(Organizacion.create()).getIdentificador().equals(identificadorOrganizacion);
-    }
+
 }
 

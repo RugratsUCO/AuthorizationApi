@@ -2,6 +2,7 @@ package com.authorizationapi.authorizationapi.messages;
 
 import com.authorizationapi.authorizationapi.config.RabbitConfig;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
+import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
 import com.authorizationapi.authorizationapi.dto.EstructuraDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class RabbitMQPublisher {
     }
     public List<Estructura> consultarTodas() {
         return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "consultar_estructuras_key", Estructura.create(), ParameterizedTypeReference.forType(List.class));
+    }
+    public List<Estructura> consultarPorOrganizacion(Organizacion organizacion) {
+        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "consultar_estructuras_organizacion_key", organizacion, ParameterizedTypeReference.forType(List.class));
     }
     public HttpStatus cambiarNombre(Estructura estructura){
         return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.EXCHANGE, "cambiar_nombre_key", estructura, ParameterizedTypeReference.forType(HttpStatus.class));

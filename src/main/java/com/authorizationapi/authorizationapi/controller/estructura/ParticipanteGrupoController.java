@@ -7,7 +7,6 @@ import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.ParticipanteGrupo;
 import com.authorizationapi.authorizationapi.service.estructura.ParticipanteGrupoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("authorization/api/v1")
 public final class ParticipanteGrupoController {
 
-    @Autowired
-    private final ParticipanteGrupoService service = new ParticipanteGrupoService();
+    private final ParticipanteGrupoService service;
+
+    public ParticipanteGrupoController(ParticipanteGrupoService service) {
+        this.service = service;
+    }
     @PostMapping("/participantegrupo")
     public ResponseEntity<Response<ParticipanteGrupo>> asignarGrupo(@RequestBody ParticipanteGrupo participante) {
 
