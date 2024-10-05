@@ -1,6 +1,24 @@
 package com.authorizationapi.authorizationapi.crosscutting.utils.messages;
 
 public class UtilMessagesController {
+    public static final class ControllerPublicacion{
+        public static final String PUBLICACION_REGISTRADA_FINAL = "La publicacion ha sido registrada exitosamente";
+        public static final String PUBLICACION_NO_REGISTRADA_FINAL = "No se ha podido registrar la publicacion";
+        public static final String PUBLICACION_NO_REGISTRADA_TECNICO = "No se ha podido registrar la publicacion";
+
+        public static final String PUBLICACIONES_CONSULTADAS_FINAL = "Las publicaciones han sido consultadas exitosamente";
+        public static final String PUBLICACIONES_NO_CONSULTADAS_FINAL = "No se han podido consultar las publicaciones";
+        public static final String PUBLICACIONES_NO_CONSULTADAS_TECNICO = "No se han podido consultar las publicaciones";
+        public static final String PUBLICACION_NO_CONSULTADA_INTERNO_FINAL = "Error interno, no se ha podido realizar la consulta correctamente";
+        public static final String NO_PUBLICACIONES_PARA_CONSULTAR_FINAL = "No hay publicaciones para consultar";
+        public static final String PUBLICACIONES_NO_CONSULTADAS_INTERNO_FINAL = "Error interno, no se ha podido realizar la consulta correctamente";
+
+        public static final String PUBLICACION_ACTUALIZADA_FINAL = "Se ha cambiado la informacion de la publicacion exitosamente";
+        public static final String PUBLICACION_NO_ACTUALIZADA_FINAL = "No se ha podido cambiar la informacion";
+
+        public static final String PUBLICACION_ELIMINADA_FINAL = "La publicacion se ha podido eliminar exitosamente";
+        public static final String PUBLICACION_NO_ELIMINADA_FINAL = "No se ha podido eliminar a la publicacion";
+    }
     public static final class ControllerPersona{
         public static final String PERSONA_REGISTRADA_FINAL = "La persona ha sido registrada exitosamente";
         public static final String PERSONA_NO_REGISTRADA_FINAL = "No se ha podido registrar la persona";
