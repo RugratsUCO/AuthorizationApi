@@ -6,8 +6,8 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
 import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
-import com.authorizationapi.authorizationapi.dto.EstructuraDTO;
-import com.authorizationapi.authorizationapi.messages.RabbitMQPublisher;
+import com.authorizationapi.authorizationapi.dto.estructura.EstructuraDTO;
+import com.authorizationapi.authorizationapi.messages.estructura.EstructuraPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,12 @@ import java.util.UUID;
 @CrossOrigin(origins = {"http://localhost:4200"})
 public final class EstructuraController {
 
-    private final RabbitMQPublisher publisher;
+    private final EstructuraPublisher publisher;
     private final AuthAdminService authService;
     private final Logger log = LoggerFactory.getLogger(EstructuraController.class);
 
     @Autowired
-    public EstructuraController(AuthAdminService authService, RabbitMQPublisher publisher) {
+    public EstructuraController(AuthAdminService authService, EstructuraPublisher publisher) {
         this.authService = authService;
         this.publisher = publisher;
     }

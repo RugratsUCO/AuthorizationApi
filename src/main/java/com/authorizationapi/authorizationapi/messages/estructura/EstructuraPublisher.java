@@ -1,9 +1,9 @@
-package com.authorizationapi.authorizationapi.messages;
+package com.authorizationapi.authorizationapi.messages.estructura;
 
 import com.authorizationapi.authorizationapi.config.RabbitConfig;
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
-import com.authorizationapi.authorizationapi.dto.EstructuraDTO;
+import com.authorizationapi.authorizationapi.dto.estructura.EstructuraDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class RabbitMQPublisher {
+public class EstructuraPublisher {
     @Autowired
     private RabbitTemplate rabbitTemplate;
     public HttpStatus crearNueva(List<Estructura> estructuras){

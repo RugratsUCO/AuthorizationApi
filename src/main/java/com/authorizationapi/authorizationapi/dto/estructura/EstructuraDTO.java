@@ -1,4 +1,4 @@
-package com.authorizationapi.authorizationapi.dto;
+package com.authorizationapi.authorizationapi.dto.estructura;
 
 import com.authorizationapi.authorizationapi.domain.estructura.Estructura;
 import lombok.Data;
