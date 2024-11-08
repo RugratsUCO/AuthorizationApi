@@ -25,6 +25,8 @@ public final class ParticipanteGrupo {
 	@Column(name = "activo")
 	private boolean activo;
 
+	@Column(name = "puedePublicar")
+	private boolean puedePublicar;
 
 	public ParticipanteGrupo() {
 		setIdentificador(UtilUUID.getDefaultValue());
@@ -77,6 +79,15 @@ public final class ParticipanteGrupo {
 
 	public boolean isActivo() {
 		return activo;
+	}
+
+	public boolean isPuedePublicar() {
+		return puedePublicar;
+	}
+
+	public ParticipanteGrupo setPuedePublicar(boolean puedePublicar) {
+		this.puedePublicar = UtilObject.getDefault(puedePublicar, UtilBoolean.getDefaultValue());
+		return this;
 	}
 
 	public static ParticipanteGrupo create() {

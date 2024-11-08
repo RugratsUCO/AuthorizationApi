@@ -1,13 +1,16 @@
 package com.authorizationapi.authorizationapi.domain.publicacion;
 
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
 
+import com.authorizationapi.authorizationapi.domain.estructura.ParticipanteGrupo;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 @Entity
 @Table(name = "Publicacion")
@@ -20,9 +23,6 @@ public final class Publicacion {
     @Column(name = "titulo", nullable = false)
     private String titulo;
 
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
-
     @Column(name = "contenido", nullable = false)
     private String contenido;
 
@@ -30,11 +30,15 @@ public final class Publicacion {
     private boolean activo;
 
     @Column(name = "fechaPublicacion", nullable = false)
-    private LocalDateTime fechaPublicacion;
+    private Date fechaPublicacion;
 
     @ManyToOne
     @JoinColumn(name = "grupo")
     private Grupo grupo;
+
+    @ManyToOne
+    @JoinColumn(name = "participanteGrupo")
+    private ParticipanteGrupo autor;
 
 
     public Publicacion() {
@@ -42,8 +46,9 @@ public final class Publicacion {
         setIdentificador(UtilUUID.getDefaultValue());
         setActivo(UtilBoolean.getDefaultValue());
         setContenido(UtilText.getDefaultValue());
-        setNombre(UtilText.getDefaultValue());
-        setFechaPublicacion(LocalDateTime.now());
+        setFechaPublicacion(Date.from(Instant.ofEpochSecond(System.currentTimeMillis())));
+        setAutor(ParticipanteGrupo.create());
+
     }
 
     public UUID getIdentificador() {
@@ -51,7 +56,7 @@ public final class Publicacion {
     }
 
     public Publicacion setIdentificador(UUID identificador) {
-        this.identificador = identificador;
+        this.identificador = UtilObject.getDefault(identificador,UtilUUID.getDefaultValue());
         return this;
     }
 
@@ -60,25 +65,17 @@ public final class Publicacion {
     }
 
     public Publicacion setTitulo(String titulo) {
-        this.titulo = titulo;
+        this.titulo = UtilObject.getDefault(titulo,UtilText.getDefaultValue());
         return this;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public Publicacion setNombre(String nombre) {
-        this.nombre = nombre;
-        return this;
-    }
 
     public String getContenido() {
         return contenido;
     }
 
     public Publicacion setContenido(String contenido) {
-        this.contenido = contenido;
+        this.contenido = UtilObject.getDefault(contenido,UtilText.getDefaultValue());
         return this;
     }
 
@@ -87,15 +84,15 @@ public final class Publicacion {
     }
 
     public Publicacion setActivo(boolean activo) {
-        this.activo = activo;
+        this.activo = UtilObject.getDefault(activo,UtilBoolean.getDefaultValue());
         return this;
     }
 
-    public LocalDateTime getFechaPublicacion() {
+    public Date getFechaPublicacion() {
         return fechaPublicacion;
     }
 
-    public Publicacion setFechaPublicacion(LocalDateTime fechaPublicacion) {
+    public Publicacion setFechaPublicacion(Date fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
         return this;
     }
@@ -105,7 +102,16 @@ public final class Publicacion {
     }
 
     public Publicacion setGrupo(Grupo grupo) {
-        this.grupo = grupo;
+        this.grupo = UtilObject.getDefault(grupo,Grupo.create());
+        return this;
+    }
+
+    public ParticipanteGrupo getAutor() {
+        return autor;
+    }
+
+    public Publicacion setAutor(ParticipanteGrupo autor) {
+        this.autor = UtilObject.getDefault(autor,ParticipanteGrupo.create());
         return this;
     }
 

@@ -6,7 +6,6 @@ import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
-import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.domain.publicacion.Publicacion;
 import com.authorizationapi.authorizationapi.messages.publicacion.PublicacionPublisher;
 import org.slf4j.Logger;
@@ -35,15 +34,13 @@ public final class PublicacionController {
         this.publisher = publisher;
     }
     @PostMapping("/publicacion/{correo}")
-    public ResponseEntity<Response<Publicacion>> crearNueva(@RequestBody Publicacion publicacion, @PathVariable String correo) {
+    public ResponseEntity<Response<Publicacion>> publicar(@RequestBody Publicacion publicacion, @PathVariable String correo) {
 
         var estadoCreacion = HttpStatus.OK;
         Response<Publicacion> response = new Response<>();
 
         try {
-            AdministradorOrganizacionEncargado administrador = authService.traerAdministradorOrganizacionDeCorreo(correo);
-
-            if(administrador != null && administrador.isActivo()){
+            if(authService.puedePublicar(correo,publicacion.getGrupo())){
 
                 estadoCreacion = publisher.crearNueva(publicacion);
                 if(estadoCreacion == HttpStatus.OK){
@@ -62,48 +59,18 @@ public final class PublicacionController {
         return new ResponseEntity<>(response, estadoCreacion);
     }
 
-    @GetMapping("/publicaciones")
-    public ResponseEntity<Response<Publicacion>> consultarTodas() {
+    @GetMapping("/publicacionGrupo/{correo}")
+    public ResponseEntity<Response<Publicacion>> consultarPorGrupo(@RequestBody Grupo grupo, @PathVariable String correo) {
 
         var statusCode = HttpStatus.OK;
         Response<Publicacion> response;
 
         try {
-            List<String> messages = new ArrayList<>();
-            List<Publicacion> publicacionesConsultadas = publisher.consultarTodas();
-
-            if (publicacionesConsultadas != null && !publicacionesConsultadas.isEmpty()) {
-                messages.add(UtilMessagesController.ControllerPublicacion.PUBLICACIONES_CONSULTADAS_FINAL);
-
-            } else {
-                statusCode = HttpStatus.NOT_FOUND;
-                messages.add(UtilMessagesController.ControllerPublicacion.PUBLICACIONES_NO_CONSULTADAS_FINAL);
-            }
-
-            response = new Response<>(publicacionesConsultadas,messages);
-
-        }catch (Exception exception) {
-            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response = new Response<>();
-            response.getMessages().add(UtilMessagesController.ControllerPublicacion.PUBLICACION_NO_CONSULTADA_INTERNO_FINAL);
-            log.error(exception.getMessage());
-        }
-
-        return new ResponseEntity<>(response,statusCode);
-    }
-    @GetMapping("/publicacionGrupo/{identificador}")
-    public ResponseEntity<Response<Publicacion>> consultarPorOrganizacion(@PathVariable String identificador) {
-
-        var statusCode = HttpStatus.OK;
-        Response<Publicacion> response;
-
-        try {
-            AdministradorOrganizacionEncargado administrador = authService.traerAdministradorOrganizacionDeCorreo(identificador);
             List<String> messages = new ArrayList<>();
             List<Publicacion> publicacionesConsultadas = new ArrayList<>();
 
-            if(administrador != null && authService.tienePermisosEnOrganizacion(administrador) && administrador.isActivo()){
-                publicacionesConsultadas = publisher.listarPorGrupo(Grupo.create());
+            if(authService.puedePublicar(correo, grupo)){
+                publicacionesConsultadas = publisher.listarPorGrupo(grupo);
             }
 
             if (publicacionesConsultadas != null && !publicacionesConsultadas.isEmpty()) {

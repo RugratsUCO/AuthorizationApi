@@ -1,5 +1,5 @@
 package com.authorizationapi.authorizationapi.domain.persona;
 
 public enum Rol {
-    PARTICIPANTE,ADMINISTRADOR_ORGANIZACION
+    PARTICIPANTE,ADMINISTRADOR_ORGANIZACION, ADMINISTRADOR_ESTRUCTURA
 }

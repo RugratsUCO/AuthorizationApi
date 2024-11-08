@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.authorizationapi.authorizationapi.auth.AuthAdminService;
 import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
-import com.authorizationapi.authorizationapi.domain.organizacion.AdministradorOrganizacionEncargado;
 import com.authorizationapi.authorizationapi.domain.organizacion.Organizacion;
 import com.authorizationapi.authorizationapi.service.organizacion.OrganizacionService;
 import org.slf4j.Logger;
@@ -48,17 +47,13 @@ public final class OrganizacionController {
     }
     @GetMapping("/organizacion/{correo}")
     public ResponseEntity<Response<Organizacion>> consultar(@PathVariable String correo) {
-        AdministradorOrganizacionEncargado administrador = authService.traerAdministradorOrganizacionDeCorreo(correo);
         var statusCode = HttpStatus.OK;
         var response = new Response<Organizacion>();
 
         try {
             List<String> messages = new ArrayList<>();
-            Organizacion organizacion;
-            assert administrador != null;
-
-            if(authService.tienePermisosEnOrganizacion(administrador)){
-               organizacion = service.consultarPorId(administrador.getOrganizacion());
+            if(authService.esAdministradorOrganizacion(correo)){
+               Organizacion organizacion = service.consultarPorId(authService.traerOrganizacionDeAdministrador(correo));
                 if (organizacion != null) {
                     messages.add(UtilMessagesController.ControllerOrganizacion.ORGANIZACIONES_CONSULDATAS_FINAL);
                     response = new Response<>(List.of(organizacion), messages);

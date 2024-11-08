@@ -1,43 +1,44 @@
 package com.authorizationapi.authorizationapi.crosscutting.utils;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public final class UtilDate {
+public class UtilDate {
+    private static final String DEFAULT_VALUE_DATE_AS_STRING = "0001-01-01"; // Formato yyyy-MM-dd
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    private static final Date DEFAULT_VALUE_DATE;
 
-    //public static final String LOCALDATETIME_RE = "/((19|2[0-9])[0-9]{2})-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[T][0-9]{2}[:][0-9]{2}[:][0-9]{2}[.][0-9]{3}/mg";
-    public static final String LOCALDATETIME_RE = "((19|2[0-9])[0-9]{2})-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[ ]([01][0-9]|2[0123])[:]([0-5][0-9])[:]([0-5][0-9])";
-
-    public static final LocalDateTime getDefaultValue(){
-        return LocalDateTime.now();
+    static {
+        try {
+            DEFAULT_VALUE_DATE = FORMATTER.parse(DEFAULT_VALUE_DATE_AS_STRING);
+        } catch (ParseException e) {
+            throw new RuntimeException("Error al inicializar la fecha predeterminada", e);
+        }
     }
 
-    public static final boolean isNull(final LocalDateTime dateTime){
-        return UtilObject.isNull(dateTime);
+    public static Date fromStringToDate(final String dateValue) throws ParseException {
+        return FORMATTER.parse(dateValue);
     }
 
-    public static final LocalDateTime getDefault(LocalDateTime dateTime){
-        return isNull(dateTime) ? getDefaultValue() : dateTime;
+    public static String fromDateToString(final Date date) {
+        return FORMATTER.format(date);
     }
 
-    public static final String getDefaultAsString(){
-        return getDefaultValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    public static Date getDefaultValueDate() {
+        return DEFAULT_VALUE_DATE;
     }
 
-    public static final boolean localDateTimeStringIsValid(final String localdateTimeValue){
-        return (UtilText.getUtilText().matchPattern(localdateTimeValue, LOCALDATETIME_RE));
+    public static String getDefaultValueDateAsString(){
+        return DEFAULT_VALUE_DATE_AS_STRING;
     }
 
-    public static final LocalDateTime generate(String dateTime){
-        DateTimeFormatter formater = new DateTimeFormatterBuilder().parseCaseInsensitive().append(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toFormatter();
-        return (localDateTimeStringIsValid(dateTime)? LocalDateTime.parse(dateTime, formater): getDefaultValue());
+    public static boolean isValidDate(String dateValue) {
+        String pattern = "^\\d{4}-\\d{2}-\\d{2}$";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(dateValue);
+        return m.matches();
     }
-
-    public static final LocalDateTime generate(String date, String time){
-        String dateTime = date + " " + time;
-        return generate(dateTime);
-    }
-
-
 }
