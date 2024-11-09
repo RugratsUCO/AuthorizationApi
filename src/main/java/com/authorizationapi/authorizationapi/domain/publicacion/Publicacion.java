@@ -1,15 +1,12 @@
 package com.authorizationapi.authorizationapi.domain.publicacion;
 
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
-import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
-import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
+import com.authorizationapi.authorizationapi.crosscutting.utils.*;
 
 import com.authorizationapi.authorizationapi.domain.estructura.ParticipanteGrupo;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 @Entity
@@ -31,11 +28,6 @@ public final class Publicacion {
 
     @Column(name = "fechaPublicacion", nullable = false)
     private Date fechaPublicacion;
-
-    @ManyToOne
-    @JoinColumn(name = "grupo")
-    private Grupo grupo;
-
     @ManyToOne
     @JoinColumn(name = "participanteGrupo")
     private ParticipanteGrupo autor;
@@ -46,8 +38,26 @@ public final class Publicacion {
         setIdentificador(UtilUUID.getDefaultValue());
         setActivo(UtilBoolean.getDefaultValue());
         setContenido(UtilText.getDefaultValue());
-        setFechaPublicacion(Date.from(Instant.ofEpochSecond(System.currentTimeMillis())));
+        setFechaPublicacion(UtilDate.getDefaultValueDate());
         setAutor(ParticipanteGrupo.create());
+
+    }
+    @JsonCreator
+    public Publicacion(
+            @JsonProperty("identificador") UUID identificador,
+            @JsonProperty("titulo") String titulo,
+            @JsonProperty("activo") boolean activo,
+            @JsonProperty("contenido") String contenido,
+            @JsonProperty("fechaPublicacion") Date fechaPublicacion,
+            @JsonProperty("autor") ParticipanteGrupo autor
+
+    ) {
+        setIdentificador(identificador);
+        setTitulo(titulo);
+        setActivo(activo);
+        setContenido(contenido);
+        setFechaPublicacion(fechaPublicacion);
+        setAutor(autor);
 
     }
 
@@ -94,15 +104,6 @@ public final class Publicacion {
 
     public Publicacion setFechaPublicacion(Date fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
-        return this;
-    }
-
-    public Grupo getGrupo() {
-        return grupo;
-    }
-
-    public Publicacion setGrupo(Grupo grupo) {
-        this.grupo = UtilObject.getDefault(grupo,Grupo.create());
         return this;
     }
 

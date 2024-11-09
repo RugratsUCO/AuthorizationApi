@@ -3,6 +3,7 @@ package com.authorizationapi.authorizationapi.controller.publicacion;
 
 import com.authorizationapi.authorizationapi.auth.AuthAdminService;
 import com.authorizationapi.authorizationapi.controller.response.Response;
+import com.authorizationapi.authorizationapi.crosscutting.utils.UtilDate;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
 import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
@@ -40,15 +41,11 @@ public final class PublicacionController {
         Response<Publicacion> response = new Response<>();
 
         try {
-            if(authService.puedePublicar(correo,publicacion.getGrupo())){
-
-                estadoCreacion = publisher.crearNueva(publicacion);
-                if(estadoCreacion == HttpStatus.OK){
-                    response.getMessages().add(UtilMessagesController.ControllerPublicacion.PUBLICACION_REGISTRADA_FINAL);
-                }
-            }
-            else {
-                response.getMessages().add(UtilMessagesController.ControllerPublicacion.PUBLICACION_NO_REGISTRADA_FINAL);
+            publicacion.setAutor(authService.traerParticipanteGrupoDeCorreo(correo));
+            publicacion.setFechaPublicacion(UtilDate.getDefaultValueDate());
+            estadoCreacion = publisher.publicar(publicacion);
+            if(estadoCreacion == HttpStatus.OK){
+                response.getMessages().add(UtilMessagesController.ControllerPublicacion.PUBLICACION_REGISTRADA_FINAL);
             }
 
         } catch (Exception exception) {
