@@ -95,7 +95,7 @@ public class AuthAdminService {
     }
     public boolean puedePublicarParticipante(String correo,Grupo grupo){
         ParticipanteGrupo participante = traerParticipanteGrupoDeCorreo(correo);
-        return !UtilObject.isNull(participante) && participante.isActivo() && participante.isPuedePublicar() && participante.getGrupo().getIdentificador().equals(grupo.getIdentificador());
+        return !UtilObject.isNull(participante) && participante.isActivo() && participante.isPuedePublicar();
     }
     public boolean puedePublicar(String correo, Grupo grupo){
         if(esParticipante(correo) && puedePublicarParticipante(correo, grupo)){

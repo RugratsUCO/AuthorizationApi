@@ -3,12 +3,16 @@ package com.authorizationapi.authorizationapi.domain.persona;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilBoolean;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "Persona")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Persona {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

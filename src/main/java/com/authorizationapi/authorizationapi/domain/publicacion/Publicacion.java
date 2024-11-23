@@ -4,6 +4,8 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.*;
 
 import com.authorizationapi.authorizationapi.domain.estructura.ParticipanteGrupo;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -11,9 +13,10 @@ import java.util.Date;
 import java.util.UUID;
 @Entity
 @Table(name = "Publicacion")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Publicacion {
     @Id
-    //@GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "identificador", nullable = false)
     private UUID identificador;
 

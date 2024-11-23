@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
     public static final String ESTRUCTURA_EXCHANGE = "estructura_exchange";
     public static final String PUBLICACION_EXCHANGE = "publicacion_exchange";
+    public static final String COMENTARIO_EXCHANGE = "comentario_exchange";
     @Bean
     public MessageConverter messageConverter(){
         return new Jackson2JsonMessageConverter();

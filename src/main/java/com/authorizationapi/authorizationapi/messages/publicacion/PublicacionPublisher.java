@@ -20,7 +20,7 @@ public class PublicacionPublisher {
         return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.PUBLICACION_EXCHANGE, "publicar_routing_key", publicacion, ParameterizedTypeReference.forType(HttpStatus.class));
     }
     public List<Publicacion> listarPorGrupo(Grupo grupo) {
-        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.ESTRUCTURA_EXCHANGE, "listar_key", grupo, ParameterizedTypeReference.forType(List.class));
+        return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.PUBLICACION_EXCHANGE, "listar_grupo_routing_key", grupo, ParameterizedTypeReference.forType(List.class));
     }
     public List<Publicacion> consultarTodas() {
         return rabbitTemplate.convertSendAndReceiveAsType(RabbitConfig.ESTRUCTURA_EXCHANGE, "listar_todas_key", Publicacion.create(), ParameterizedTypeReference.forType(List.class));

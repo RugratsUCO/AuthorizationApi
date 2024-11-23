@@ -5,11 +5,15 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.domain.persona.Persona;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
 @Table(name = "Participante")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Participante {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

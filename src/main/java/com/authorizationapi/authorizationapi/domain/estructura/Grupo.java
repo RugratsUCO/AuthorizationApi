@@ -6,10 +6,14 @@ import com.authorizationapi.authorizationapi.crosscutting.utils.UtilObject;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilText;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import java.util.UUID;
 @Entity
 @Table(name = "Grupo")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Grupo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

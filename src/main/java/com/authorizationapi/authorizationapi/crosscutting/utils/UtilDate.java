@@ -30,6 +30,9 @@ public class UtilDate {
     public static Date getDefaultValueDate() {
         return DEFAULT_VALUE_DATE;
     }
+    public static Date getNowValue(){
+        return new Date();
+    }
 
     public static String getDefaultValueDateAsString(){
         return DEFAULT_VALUE_DATE_AS_STRING;

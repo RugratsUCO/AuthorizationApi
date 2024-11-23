@@ -6,7 +6,7 @@ import com.authorizationapi.authorizationapi.controller.response.Response;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilDate;
 import com.authorizationapi.authorizationapi.crosscutting.utils.UtilUUID;
 import com.authorizationapi.authorizationapi.crosscutting.utils.messages.UtilMessagesController;
-import com.authorizationapi.authorizationapi.domain.estructura.Grupo;
+import com.authorizationapi.authorizationapi.domain.estructura.ParticipanteGrupo;
 import com.authorizationapi.authorizationapi.domain.publicacion.Publicacion;
 import com.authorizationapi.authorizationapi.messages.publicacion.PublicacionPublisher;
 import org.slf4j.Logger;
@@ -37,15 +37,19 @@ public final class PublicacionController {
     @PostMapping("/publicacion/{correo}")
     public ResponseEntity<Response<Publicacion>> publicar(@RequestBody Publicacion publicacion, @PathVariable String correo) {
 
-        var estadoCreacion = HttpStatus.OK;
+        var estadoCreacion = HttpStatus.CONFLICT;
         Response<Publicacion> response = new Response<>();
 
         try {
-            publicacion.setAutor(authService.traerParticipanteGrupoDeCorreo(correo));
-            publicacion.setFechaPublicacion(UtilDate.getDefaultValueDate());
-            estadoCreacion = publisher.publicar(publicacion);
+            if(authService.puedePublicarParticipante(correo,publicacion.getAutor().getGrupo())){
+                publicacion.setAutor(authService.traerParticipanteGrupoDeCorreo(correo));
+                publicacion.setFechaPublicacion(UtilDate.getDefaultValueDate());
+                estadoCreacion = publisher.publicar(publicacion);
+            }
             if(estadoCreacion == HttpStatus.OK){
                 response.getMessages().add(UtilMessagesController.ControllerPublicacion.PUBLICACION_REGISTRADA_FINAL);
+            }else {
+                response.getMessages().add(UtilMessagesController.ControllerPublicacion.PUBLICACION_NO_REGISTRADA_FINAL);
             }
 
         } catch (Exception exception) {
@@ -57,22 +61,19 @@ public final class PublicacionController {
     }
 
     @GetMapping("/publicacionGrupo/{correo}")
-    public ResponseEntity<Response<Publicacion>> consultarPorGrupo(@RequestBody Grupo grupo, @PathVariable String correo) {
+    public ResponseEntity<Response<Publicacion>> consultarPorGrupo(@PathVariable String correo) {
 
         var statusCode = HttpStatus.OK;
         Response<Publicacion> response;
 
         try {
             List<String> messages = new ArrayList<>();
-            List<Publicacion> publicacionesConsultadas = new ArrayList<>();
-
-            if(authService.puedePublicar(correo, grupo)){
-                publicacionesConsultadas = publisher.listarPorGrupo(grupo);
-            }
+            List<Publicacion> publicacionesConsultadas;
+            ParticipanteGrupo participante = authService.traerParticipanteGrupoDeCorreo(correo);
+            publicacionesConsultadas = publisher.listarPorGrupo(participante.getGrupo());
 
             if (publicacionesConsultadas != null && !publicacionesConsultadas.isEmpty()) {
                 messages.add(UtilMessagesController.ControllerPublicacion.PUBLICACIONES_CONSULTADAS_FINAL);
-
             } else {
                 statusCode = HttpStatus.NOT_FOUND;
                 messages.add(UtilMessagesController.ControllerPublicacion.PUBLICACIONES_NO_CONSULTADAS_FINAL);
