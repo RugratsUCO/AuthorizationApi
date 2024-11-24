@@ -19,6 +19,19 @@ public class UtilMessagesController {
         public static final String PUBLICACION_ELIMINADA_FINAL = "La publicacion se ha podido eliminar exitosamente";
         public static final String PUBLICACION_NO_ELIMINADA_FINAL = "No se ha podido eliminar a la publicacion";
     }
+    public static final class ControllerComentario{
+        public static final String COMENTARIO_REGISTRADO_FINAL = "El comentario ha sido registrado exitosamente";
+        public static final String COMENTARIO_NO_REGISTRADO_FINAL = "No se ha podido comentar";
+        public static final String COMENTARIO_NO_REGISTRADO_TECNICO = "No se ha podido registrar el comentario";
+
+        public static final String COMENTARIOS_CONSULTADOS_FINAL = "Los comentarios han sido consultados exitosamente";
+        public static final String COMENTARIOS_NO_CONSULTADOS_FINAL = "No se han podido consultar los comentarios";
+        public static final String COMENTARIOS_NO_CONSULTADOS_TECNICO = "No se han podido consultar los comentarios";
+        public static final String COMENTARIO_NO_CONSULTADO_INTERNO_FINAL = "Error interno, no se ha podido realizar la consulta correctamente";
+        public static final String NO_COMENTARIOS_PARA_CONSULTAR_FINAL = "No hay comentarios para consultar";
+        public static final String COMENTARIOS_NO_CONSULTADOS_INTERNO_FINAL = "Error interno, no se ha podido realizar la consulta correctamente";
+
+    }
     public static final class ControllerPersona{
         public static final String PERSONA_REGISTRADA_FINAL = "La persona ha sido registrada exitosamente";
         public static final String PERSONA_NO_REGISTRADA_FINAL = "No se ha podido registrar la persona";
